@@ -1,43 +1,54 @@
 package Main;
 
 import SQL.Conexion;
-import com.formdev.flatlaf.FlatDarkLaf;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 
-public class Principal extends JFrame {
+public class Principal extends JPanel {
     private JButton stop;
     private JButton start;
     private JButton reboot;
     public JPanel panel;
     private JTable table;
     private JButton manage;
+    private JButton update;
 
-    public Principal() throws SQLException {
-        LlenarTabla();
+    public Principal(CardLayout cardLayout, JPanel cardPanel) throws SQLException {
+        llenarTabla();
 
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                int row = table.rowAtPoint(e.getPoint());  // Obtener fila
-                int col = table.columnAtPoint(e.getPoint()); // Obtener columna
+                int row = table.rowAtPoint(e.getPoint());
+                int col = table.columnAtPoint(e.getPoint());
 
                 if (row >= 0 && col >= 0) {
                     Object cellValue = table.getValueAt(row, col);
-                    if (cellValue == "Detener") {
+                    if (cellValue.equals("Detener")) {
                         // Detener aspiradora
                     }
-                    if (cellValue == "Reiniciar") {
+
+                    if (cellValue.equals("Reiniciar")) {
                         // Reiniciar aspiradora
                     }
-                    if (cellValue == "Iniciar") {
+
+                    if (cellValue.equals("Iniciar")) {
                         // Iniciar aspiradora
                     }
                 }
+            }
+        });
+
+        update.addActionListener(e -> {
+            try {
+                llenarTabla();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
             }
         });
 
@@ -54,37 +65,27 @@ public class Principal extends JFrame {
         });
 
         manage.addActionListener(e -> {
-            try {
-                UIManager.setLookAndFeel(new FlatDarkLaf());
-            } catch (UnsupportedLookAndFeelException unsupportedLookAndFeelException) {
-                unsupportedLookAndFeelException.printStackTrace();
-            }
-            Manage frame = new Manage();
-            this.setContentPane(frame.panel);
-            this.revalidate();
-            this.repaint();
+            cardLayout.show(cardPanel, "Manage");
         });
     }
 
-
-    public void LlenarTabla() throws SQLException {
+    public void llenarTabla() throws SQLException {
         Conexion conexion = new Conexion();
         conexion.conectar();
 
         String[][] datos = conexion.obtenerAspiradoras();
 
-        if (datos.length == 0) {
-            JOptionPane.showMessageDialog(null, "No hay aspiradoras registradas");
-            return;
-        }
-
-        String[] columnas = {"ID", "IP", "Máquina", "Estado", "Encendido", "Detener", "Reiniciar", "Iniciar"};
-        DefaultTableModel modelo = new DefaultTableModel(datos, columnas);
+        String[] columnas = {"ID", "IP", "Máquina", "Estado", "Encendido/Apagado", "Detener", "Reiniciar", "Iniciar"};
+        DefaultTableModel modelo = new DefaultTableModel(datos, columnas) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
 
         table.setModel(modelo);
 
         table.getColumnModel().getColumn(0).setPreferredWidth(50);
         table.getColumnModel().getColumn(1).setPreferredWidth(150);
     }
-
 }

@@ -32,12 +32,7 @@ public class Inicio extends JFrame {
                         System.err.println("Fallo al inicializar FlatLaf: " + ex.getMessage());
                     }
 
-                    Principal frame = new Principal();
-                    frame.setSize(1400, 800);
-                    frame.setContentPane(frame.panel);
-                    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                    frame.setLocationRelativeTo(null);
-                    frame.setVisible(true);
+                    MainFrame frame = new MainFrame();
 
                     this.dispose();
                 } else {

@@ -1,34 +1,65 @@
 package Main;
 
-import com.formdev.flatlaf.FlatDarkLaf;
+import SQL.Conexion;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.sql.SQLException;
 
-public class Manage extends JFrame {
+public class Manage extends JPanel {
     private JTable table;
     private JButton register;
     public JPanel panel;
     private JButton principal;
+    private JButton update;
 
-    public Manage() {
-        principal.addActionListener(e -> {
+    public Manage(CardLayout cardLayout, JPanel cardPanel) throws SQLException {
+        llenarTabla();
+
+        update.addActionListener(e -> {
             try {
-                UIManager.setLookAndFeel(new FlatDarkLaf());
-            } catch (UnsupportedLookAndFeelException unsupportedLookAndFeelException) {
-                unsupportedLookAndFeelException.printStackTrace();
-            }
-            Principal frame = null;
-            try {
-                frame = new Principal();
+                llenarTabla();
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
-            this.setContentPane(frame.panel);
-            this.revalidate();
-            this.repaint();
         });
+        register.addActionListener(e -> {
+            Register register = null;
+            try {
+                register = new Register();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+            register.setSize(600, 400);
+            register.setContentPane(register.panel);
+            register.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            register.setLocationRelativeTo(null);
+            register.setVisible(true);
+        });
+
+        principal.addActionListener(e -> {
+            cardLayout.show(cardPanel, "Principal");
+        });
+    }
+
+    public void llenarTabla() throws SQLException {
+        Conexion conexion = new Conexion();
+        conexion.conectar();
+
+        String[][] datos = conexion.obtenerAdministrarAspiradoras();
+
+        String[] columnas = {"ID", "IP", "Máquina", "Editar", "Eliminar"};
+        DefaultTableModel modelo = new DefaultTableModel(datos, columnas) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        table.setModel(modelo);
+
+        table.getColumnModel().getColumn(0).setPreferredWidth(50);
+        table.getColumnModel().getColumn(1).setPreferredWidth(150);
     }
 }
