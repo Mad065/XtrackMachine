@@ -41,6 +41,7 @@ public class Conexion {
                 FROM Aspiradora a
                 INNER JOIN Maquina m ON a.maquina = m.id
                 INNER JOIN Estado e ON a.estado = e.id
+                ORDER BY a.id
                 """;
 
         Statement stmt = connection.createStatement(
@@ -89,6 +90,7 @@ public class Conexion {
                 SELECT a.id, a.ip, m.nombre AS maquina
                 FROM Aspiradora a
                 INNER JOIN Maquina m ON a.maquina = m.id
+                ORDER BY a.id
                 """;
 
         Statement stmt = connection.createStatement(
@@ -151,6 +153,7 @@ public class Conexion {
         int i = 0;
         while (rs.next()) {
             datos[i] = rs.getString("nombre");
+            i++;
         }
 
         for (String dato : datos) {
@@ -184,6 +187,7 @@ public class Conexion {
         int i = 0;
         while (rs.next()) {
             datos[i] = rs.getString("nombre");
+            i++;
         }
 
         for (String dato : datos) {

@@ -35,17 +35,20 @@ public class Register extends JFrame {
         register.addActionListener(e -> {
             int idInt = Integer.parseInt(id.getText());
             String ipText = ip.getText();
-            int idMaquina = maquina.getSelectedIndex();
-            int idEstado = estado.getSelectedIndex();
+            int idMaquina = maquina.getSelectedIndex() + 1;
+            int idEstado = estado.getSelectedIndex() + 1;
+
 
             try {
                 Conexion conexion = new Conexion();
+                conexion.conectar();
                 conexion.registrarAspiradora(idInt, ipText, idMaquina, idEstado);
             } catch (SQLException ex) {
-                throw new RuntimeException(ex);
+                JOptionPane.showMessageDialog(null, "Error al realizar la operación en la base de datos: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
 
-
+            this.dispose();
+            JOptionPane.showMessageDialog(null, "Aspiradora registrada exitosamente");
         });
     }
 

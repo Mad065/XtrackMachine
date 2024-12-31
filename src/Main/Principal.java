@@ -85,7 +85,5 @@ public class Principal extends JPanel {
 
         table.setModel(modelo);
 
-        table.getColumnModel().getColumn(0).setPreferredWidth(50);
-        table.getColumnModel().getColumn(1).setPreferredWidth(150);
     }
 }
