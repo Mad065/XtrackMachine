@@ -29,6 +29,7 @@ public class Principal extends JPanel {
 
                 if (row >= 0 && col >= 0) {
                     Object cellValue = table.getValueAt(row, col);
+                    int ipAspiradora = Integer.parseInt((String) table.getValueAt(row, 1)) ;
                     if (cellValue.equals("Detener")) {
                         // Detener aspiradora
                     }

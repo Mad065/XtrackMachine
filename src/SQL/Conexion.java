@@ -9,6 +9,17 @@ public class Conexion {
     String user = "root";
     String password = "";
 
+    public Conexion () {
+
+    }
+
+    public Conexion(Connection connection, String url, String user, String password) {
+        this.connection = connection;
+        this.url = url;
+        this.user = user;
+        this.password = password;
+    }
+
     public void conectar() {
         try {
             connection = DriverManager.getConnection(url, user, password);
@@ -129,6 +140,24 @@ public class Conexion {
         return datos;
     }
 
+    public String[] obtenerAspiradora(int idAspiradora) throws SQLException {
+        String query = "SELECT * FROM Aspiradora WHERE id = ?";
+        PreparedStatement ps = connection.prepareStatement(query);
+        ps.setString(1, Integer.toString(idAspiradora));
+        ResultSet rs = ps.executeQuery();
+
+        String[] datos = new String[4];
+
+        datos[0] = rs.getString("id");
+        datos[1] = rs.getString("ip");
+        datos[2] = rs.getString("maquina");
+        datos[3] = rs.getString("estado");
+
+        System.out.println(String.join(", ", datos));
+
+        return datos;
+    }
+
     public String[] obtenerMaquinas() throws SQLException {
         String query = "SELECT nombre FROM Maquina";
         Statement stmt = connection.createStatement(
@@ -156,9 +185,7 @@ public class Conexion {
             i++;
         }
 
-        for (String dato : datos) {
-            System.out.println(dato);
-        }
+        System.out.println(String.join(", ", datos));
 
         return datos;
     }
@@ -190,9 +217,7 @@ public class Conexion {
             i++;
         }
 
-        for (String dato : datos) {
-            System.out.println(dato);
-        }
+        System.out.println(String.join(", ", datos));
 
         return datos;
     }
