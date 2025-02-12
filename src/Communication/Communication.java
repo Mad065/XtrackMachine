@@ -7,8 +7,9 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 public class Communication {
+    public int puerto = 7777;
 
-    public String enviarMensaje(String ip, int puerto, String mensaje) throws IOException {
+    public String enviarMensaje(String ip, String mensaje) throws IOException {
         Socket socket = new Socket(ip, puerto);
 
         PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
@@ -24,10 +25,57 @@ public class Communication {
     }
 
     public boolean verificarConexion() {
-
+        return true;
     }
 
-    public String actualizarEstado() {
+    public String actualizarEstado(String ip) throws IOException {
+        // Update (U)
+        String response = enviarMensaje(ip, "U");
+        String estado;
 
+        switch (response) {
+            case "D": estado = "Sucio"; break;
+            case "F": estado = "Limpio"; break;
+            case "C": estado = "Limpiando"; break;
+            case "U": estado = "En uso"; break;
+            case "X": estado = "Error"; break;
+            default: estado = "Desconocido"; break;
+        }
+
+        // Actualizar en la base de datos
+        return estado;
+    }
+
+    public boolean DetenerAspiradora(String ip) throws IOException {
+        // Stop (S)
+        String response = enviarMensaje(ip, "S");
+
+        if (response.equals("T")) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean ReiniciarAspiradora(String ip) throws IOException {
+        // Reboot (R)
+        String response = enviarMensaje(ip, "R");
+
+        if (response.equals("T")) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean IniciarAspiradora(String ip) throws IOException {
+        // Init (I)
+        String response = enviarMensaje(ip, "I");
+
+        if (response.equals("T")) {
+            return true;
+        }
+
+        return false;
     }
 }

@@ -143,15 +143,21 @@ public class Conexion {
     public String[] obtenerAspiradora(int idAspiradora) throws SQLException {
         String query = "SELECT * FROM Aspiradora WHERE id = ?";
         PreparedStatement ps = connection.prepareStatement(query);
-        ps.setString(1, Integer.toString(idAspiradora));
+        ps.setInt(1, idAspiradora);
         ResultSet rs = ps.executeQuery();
 
         String[] datos = new String[4];
 
-        datos[0] = rs.getString("id");
-        datos[1] = rs.getString("ip");
-        datos[2] = rs.getString("maquina");
-        datos[3] = rs.getString("estado");
+        if (rs.next()) { // Mover el cursor a la primera fila
+            datos[0] = rs.getString("id");
+            datos[1] = rs.getString("ip");
+            datos[2] = rs.getString("maquina");
+            datos[3] = rs.getString("estado");
+
+            System.out.println(String.join(", ", datos));
+        } else {
+            System.out.println("No se encontró la aspiradora con ID: " + idAspiradora);
+        }
 
         System.out.println(String.join(", ", datos));
 

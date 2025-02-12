@@ -17,6 +17,7 @@ public class Edit extends JFrame {
     private JLabel maquinaLabel;
     private JButton verify;
     private JButton update;
+    public JPanel panel;
 
     protected int idAspiradora;
 
@@ -26,7 +27,6 @@ public class Edit extends JFrame {
         this.idAspiradora = idAspiradora;
 
         llenarComboBox();
-
         llenarDatos();
 
         idLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
@@ -81,7 +81,7 @@ public class Edit extends JFrame {
 
         id.setText(datos[0]);
         ip.setText(datos[1]);
-        maquina.setSelectedIndex(Integer.parseInt(datos[2]) + 1);
-        estado.setSelectedIndex(Integer.parseInt(datos[3]) + 1);
+        maquina.setSelectedIndex(Integer.parseInt(datos[2]) - 1);
+        estado.setSelectedIndex(Integer.parseInt(datos[3]) - 1);
     }
 }

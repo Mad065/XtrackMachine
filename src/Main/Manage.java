@@ -30,8 +30,6 @@ public class Manage extends JPanel {
                     Object cellValue = table.getValueAt(row, col);
                     int idAspiradora = Integer.parseInt((String) table.getValueAt(row, 0)) ;
                     if (cellValue.equals("Editar")) {
-                        // Editar aspiradora
-                        // Abrir ventana para editar
                         Edit edit = null;
                         try {
                             edit = new Edit(idAspiradora);
@@ -39,6 +37,7 @@ public class Manage extends JPanel {
                             throw new RuntimeException(ex);
                         }
                         edit.setSize(600, 400);
+                        edit.setContentPane(edit.panel);
                         edit.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                         edit.setLocationRelativeTo(null);
                         edit.setVisible(true);
