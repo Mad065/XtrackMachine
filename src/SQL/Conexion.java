@@ -164,6 +164,39 @@ public class Conexion {
         return datos;
     }
 
+    public  String[] obtenerIPs() throws SQLException {
+        String query = "SELECT ip FROM Aspiradora";
+        Statement stmt = connection.createStatement(
+                ResultSet.TYPE_SCROLL_INSENSITIVE,
+                ResultSet.CONCUR_READ_ONLY
+        );
+        ResultSet rs = stmt.executeQuery(query);
+
+        int rowCount = 0;
+        while (rs.next()) {
+            rowCount++;
+        }
+
+        if (rowCount == 0) {
+            return new String[0];
+        }
+
+        rs.beforeFirst();
+
+        String[] datos = new String[rowCount];
+
+        int i = 0;
+        while (rs.next()) { // Mover el cursor a la primera fila
+            datos[i] = rs.getString("ip");
+            i++;
+            System.out.println(String.join(", ", datos));
+        }
+
+        System.out.println(String.join(", ", datos));
+
+        return datos;
+    }
+
     public String[] obtenerMaquinas() throws SQLException {
         String query = "SELECT nombre FROM Maquina";
         Statement stmt = connection.createStatement(

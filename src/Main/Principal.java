@@ -1,5 +1,6 @@
 package Main;
 
+import Communication.Communication;
 import SQL.Conexion;
 
 import javax.swing.*;
@@ -7,7 +8,9 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Arrays;
 
 public class Principal extends JPanel {
     private JButton stop;
@@ -21,6 +24,8 @@ public class Principal extends JPanel {
     public Principal(CardLayout cardLayout, JPanel cardPanel) throws SQLException {
         llenarTabla();
 
+        Communication communication = new Communication();
+
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -29,17 +34,39 @@ public class Principal extends JPanel {
 
                 if (row >= 0 && col >= 0) {
                     Object cellValue = table.getValueAt(row, col);
-                    int ipAspiradora = Integer.parseInt((String) table.getValueAt(row, 1)) ;
+                    String ipAspiradora = (String) table.getValueAt(row, 1);
+
                     if (cellValue.equals("Detener")) {
                         // Detener aspiradora
+                        try {
+                            if (!communication.detenerAspiradora(ipAspiradora)) {
+                                JOptionPane.showMessageDialog(null, "Error al detener", "Error", JOptionPane.ERROR_MESSAGE);
+                            }
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
                     }
 
                     if (cellValue.equals("Reiniciar")) {
                         // Reiniciar aspiradora
+                        try {
+                            if (!communication.reiniciarAspiradora(ipAspiradora)) {
+                                JOptionPane.showMessageDialog(null, "Error al reiniciar", "Error", JOptionPane.ERROR_MESSAGE);
+                            }
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
                     }
 
                     if (cellValue.equals("Iniciar")) {
                         // Iniciar aspiradora
+                        try {
+                            if (!communication.iniciarAspiradora(ipAspiradora)) {
+                                JOptionPane.showMessageDialog(null, "Error al iniciar", "Error", JOptionPane.ERROR_MESSAGE);
+                            }
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
                     }
                 }
             }
@@ -55,14 +82,53 @@ public class Principal extends JPanel {
 
         start.addActionListener(e -> {
             // Iniciar todas las aspiradoras
+            try {
+                String[] ips = obtenerIPs();
+                Arrays.stream(ips).forEach(ip ->
+                {
+                    try {
+                        communication.iniciarAspiradora(ip);
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                });
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
         });
 
         stop.addActionListener(e -> {
             // Detener todas las aspiradoras
+            try {
+                String[] ips = obtenerIPs();
+                Arrays.stream(ips).forEach(ip ->
+                {
+                    try {
+                        communication.detenerAspiradora(ip);
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                });
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
         });
 
         reboot.addActionListener(e -> {
             // Reiniciar todas las aspiradoras
+            try {
+                String[] ips = obtenerIPs();
+                Arrays.stream(ips).forEach(ip ->
+                {
+                    try {
+                        communication.reiniciarAspiradora(ip);
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                });
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
         });
 
         manage.addActionListener(e -> {
@@ -86,5 +152,14 @@ public class Principal extends JPanel {
 
         table.setModel(modelo);
 
+    }
+
+    public String[] obtenerIPs() throws SQLException {
+        Conexion conexion = new Conexion();
+        conexion.conectar();
+
+        String[] ips = conexion.obtenerIPs();
+
+        return ips;
     }
 }

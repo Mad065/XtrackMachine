@@ -46,7 +46,7 @@ public class Communication {
         return estado;
     }
 
-    public boolean DetenerAspiradora(String ip) throws IOException {
+    public boolean detenerAspiradora(String ip) throws IOException {
         // Stop (S)
         String response = enviarMensaje(ip, "S");
 
@@ -57,7 +57,7 @@ public class Communication {
         return false;
     }
 
-    public boolean ReiniciarAspiradora(String ip) throws IOException {
+    public boolean reiniciarAspiradora(String ip) throws IOException {
         // Reboot (R)
         String response = enviarMensaje(ip, "R");
 
@@ -68,7 +68,7 @@ public class Communication {
         return false;
     }
 
-    public boolean IniciarAspiradora(String ip) throws IOException {
+    public boolean iniciarAspiradora(String ip) throws IOException {
         // Init (I)
         String response = enviarMensaje(ip, "I");
 
