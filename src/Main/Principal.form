@@ -229,14 +229,6 @@
           </component>
         </children>
       </scrollpane>
-      <component id="e7f30" class="javax.swing.JButton" binding="start">
-        <constraints>
-          <grid row="1" column="20" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <text value="Iniciar"/>
-        </properties>
-      </component>
       <component id="7fe0b" class="javax.swing.JButton" binding="manage">
         <constraints>
           <grid row="1" column="2" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
@@ -258,20 +250,36 @@
           <grid row="17" column="9" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
       </hspacer>
+      <component id="cd59a" class="javax.swing.JButton" binding="stop">
+        <constraints>
+          <grid row="1" column="10" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Detener"/>
+        </properties>
+      </component>
       <component id="67274" class="javax.swing.JButton" binding="reboot">
         <constraints>
-          <grid row="1" column="17" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="1" column="13" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <text value="Reiniciar"/>
         </properties>
       </component>
-      <component id="cd59a" class="javax.swing.JButton" binding="stop">
+      <component id="e7f30" class="javax.swing.JButton" binding="start">
         <constraints>
-          <grid row="1" column="14" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="1" column="16" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="Detener"/>
+          <text value="Iniciar"/>
+        </properties>
+      </component>
+      <component id="60641" class="javax.swing.JButton" binding="settings">
+        <constraints>
+          <grid row="1" column="22" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Configuracion"/>
         </properties>
       </component>
     </children>

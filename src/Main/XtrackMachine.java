@@ -8,13 +8,13 @@ import SQL.Conexion;
 import java.awt.*;
 import java.sql.SQLException;
 
-public class Inicio extends JFrame {
+public class XtrackMachine extends JFrame {
     private JTextField username;
     private JTextField password;
     private JButton start;
     protected JPanel panel;
 
-    public Inicio()  {
+    public XtrackMachine()  {
         Conexion conexion = new Conexion();
         conexion.conectar();
         start.addActionListener(e -> {
@@ -22,7 +22,6 @@ public class Inicio extends JFrame {
                 String usernameText = username.getText();
                 String passwordText = password.getText();
                 if (conexion.verificarUsuario(usernameText, passwordText)) {
-                    JOptionPane.showMessageDialog(null, "Inicio exitoso");
                     try {
                         UIManager.setLookAndFeel(new FlatDarkLaf());
 
@@ -53,7 +52,7 @@ public class Inicio extends JFrame {
             System.err.println("Fallo al inicializar FlatLaf: " + e.getMessage());
         }
 
-        Inicio frame = new Inicio();
+        XtrackMachine frame = new XtrackMachine();
         frame.setSize(700, 400);
         frame.setContentPane(frame.panel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

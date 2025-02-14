@@ -4,6 +4,7 @@ import Communication.Communication;
 import SQL.Conexion;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -20,6 +21,7 @@ public class Principal extends JPanel {
     private JTable table;
     private JButton manage;
     private JButton update;
+    private JButton settings;
 
     public Principal(CardLayout cardLayout, JPanel cardPanel) throws SQLException {
         llenarTabla();
@@ -151,7 +153,16 @@ public class Principal extends JPanel {
         };
 
         table.setModel(modelo);
+        table.setRowHeight(44); // altura filas
+        table.getTableHeader().setReorderingAllowed(true); // reordenamiento
+        table.getTableHeader().setResizingAllowed(true); // redimensión
 
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(JLabel.CENTER); // Centrar el texto
+
+        for (int i = 0; i < table.getColumnCount(); i++) {
+            table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        }
     }
 
     public String[] obtenerIPs() throws SQLException {
