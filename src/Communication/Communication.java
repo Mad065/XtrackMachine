@@ -1,10 +1,13 @@
 package Communication;
 
+import SQL.Conexion;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.sql.SQLException;
 
 public class Communication {
     public int puerto = 7777;
@@ -35,21 +38,24 @@ public class Communication {
         return true;
     }
 
-    public String actualizarEstado(String ip) throws IOException {
+    public Integer actualizarEstado(String ip) throws IOException, SQLException {
         // Update (U)
         String response = enviarMensaje(ip, "U");
-        String estado;
+        int estado;
 
         switch (response) {
-            case "D": estado = "Sucio"; break;
-            case "F": estado = "Limpio"; break;
-            case "C": estado = "Limpiando"; break;
-            case "U": estado = "En uso"; break;
-            case "X": estado = "Error"; break;
-            default: estado = "Desconocido"; break;
+            case "D": estado = 1; break; // (Sucio)
+            case "F": estado = 2; break; // (Limpio)
+            case "C": estado = 3; break; // (Limpiando)
+            case "U": estado = 4; break; // (En uso)
+            case "X": estado = 5; break; // (Error)
+            default: estado = 6; break; // (Desconocido)
         }
 
         // TODO Actualizar la base de datos para usar los estados correctos y hacer codigo para actualizar estado en la base de datos
+        Conexion conexion = new Conexion();
+        conexion.actualizarAspiradora(ip, estado);
+
         return estado;
     }
 

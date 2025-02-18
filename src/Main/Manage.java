@@ -18,7 +18,8 @@ public class Manage extends JPanel {
     private JButton update;
 
     public Manage(CardLayout cardLayout, JPanel cardPanel) throws SQLException {
-        llenarTabla();
+        Conexion conexion = new Conexion();
+        llenarTabla(conexion);
 
 
         table.addMouseListener(new MouseAdapter() {
@@ -45,7 +46,11 @@ public class Manage extends JPanel {
                     }
 
                     if (cellValue.equals("Eliminar")) {
-                        // TODO Programar eliminacion de aspiradoras de la base de datos
+                        try {
+                            conexion.eliminarAspiradora(idAspiradora);
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
                     }
                 }
             }
@@ -53,7 +58,7 @@ public class Manage extends JPanel {
 
         update.addActionListener(e -> {
             try {
-                llenarTabla();
+                llenarTabla(conexion);
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
@@ -78,8 +83,7 @@ public class Manage extends JPanel {
         });
     }
 
-    public void llenarTabla() throws SQLException {
-        Conexion conexion = new Conexion();
+    public void llenarTabla(Conexion conexion) throws SQLException {
         conexion.conectar();
 
         String[][] datos = conexion.obtenerAdministrarAspiradoras();

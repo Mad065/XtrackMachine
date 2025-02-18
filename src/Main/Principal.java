@@ -7,6 +7,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -74,12 +75,8 @@ public class Principal extends JPanel {
             }
         });
 
-        update.addActionListener(e -> {
-            try {
-                llenarTabla();
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
+        update.addActionListener( e -> {
+            actualizar(communication);
         });
 
         start.addActionListener(e -> {
@@ -182,5 +179,31 @@ public class Principal extends JPanel {
         String[] ips = conexion.obtenerIPs();
 
         return ips;
+    }
+
+    public void actualizar(Communication communication) {
+        // Actualizar estados de todas las aspiradoras
+        try {
+            String[] ips = obtenerIPs();
+            Arrays.stream(ips).forEach(ip ->
+            {
+                try {
+                    communication.actualizarEstado(ip);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        // Llenar tabla
+        try {
+            llenarTabla();
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 }

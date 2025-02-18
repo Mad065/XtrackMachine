@@ -281,6 +281,14 @@ public class Conexion {
         ps.executeUpdate();
     }
 
+    public void actualizarAspiradora(String ip, int estado) throws SQLException {
+        String query = "UPDATE Aspiradora SET estado = ? WHERE ip = ?";
+        PreparedStatement ps = connection.prepareStatement(query);
+        ps.setInt(1, estado);
+        ps.setString(2, ip);
+        ps.executeUpdate();
+    }
+
     public void eliminarAspiradora(int id) throws SQLException {
         String query = "DELETE FROM Aspiradora WHERE id = ?;";
         PreparedStatement ps = connection.prepareStatement(query);
