@@ -45,7 +45,7 @@ public class Manage extends JPanel {
                     }
 
                     if (cellValue.equals("Eliminar")) {
-                        // Eliminar aspiradora
+                        // TODO Programar eliminacion de aspiradoras de la base de datos
                     }
                 }
             }

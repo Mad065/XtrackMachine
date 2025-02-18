@@ -136,6 +136,16 @@ public class Principal extends JPanel {
         manage.addActionListener(e -> {
             cardLayout.show(cardPanel, "Manage");
         });
+
+        settings.addActionListener(e -> {
+            Settings settings = null;
+            settings = new Settings();
+            settings.setSize(600, 400);
+            settings.setContentPane(settings.panel);
+            settings.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            settings.setLocationRelativeTo(null);
+            settings.setVisible(true);
+        });
     }
 
     public void llenarTabla() throws SQLException {

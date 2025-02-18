@@ -24,7 +24,14 @@ public class Communication {
         return response;
     }
 
-    public boolean verificarConexion() {
+    public boolean verificarConexion(String ip) throws IOException {
+        // Verification (V)
+        String response = enviarMensaje(ip, "V");
+
+        if (response.equals("T")) {
+            return true;
+        }
+
         return true;
     }
 

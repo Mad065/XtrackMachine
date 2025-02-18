@@ -30,6 +30,7 @@ public class Register extends JFrame {
         verify.addActionListener(e -> {
             // Verificar aspiradora
             // Tratar de conectarse por sockets
+            
         });
 
         register.addActionListener(e -> {

@@ -1,4 +1,7 @@
 package Main;
 
-public class Settings {
+import javax.swing.*;
+
+public class Settings extends JFrame {
+    public JPanel panel;
 }
