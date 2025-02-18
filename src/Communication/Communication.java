@@ -49,7 +49,7 @@ public class Communication {
             default: estado = "Desconocido"; break;
         }
 
-        // Actualizar en la base de datos
+        // TODO Actualizar la base de datos para usar los estados correctos y hacer codigo para actualizar estado en la base de datos
         return estado;
     }
 

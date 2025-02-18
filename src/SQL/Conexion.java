@@ -280,4 +280,11 @@ public class Conexion {
         ps.setInt(4, id);
         ps.executeUpdate();
     }
+
+    public void eliminarAspiradora(int id) throws SQLException {
+        String query = "DELETE FROM Aspiradora WHERE id = ?;";
+        PreparedStatement ps = connection.prepareStatement(query);
+        ps.setInt(1, id);
+        ps.executeQuery();
+    }
 }

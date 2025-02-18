@@ -1,9 +1,11 @@
 package Main;
 
+import Communication.Communication;
 import SQL.Conexion;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 import java.sql.SQLException;
 
 public class Register extends JFrame {
@@ -18,6 +20,7 @@ public class Register extends JFrame {
     private JLabel ipLabel;
     private JLabel maquinaLabel;
     private JLabel estadoLabel;
+    private JLabel verification;
 
     public Register() throws SQLException {
         llenarComboBox();
@@ -28,9 +31,15 @@ public class Register extends JFrame {
         estadoLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 
         verify.addActionListener(e -> {
-            // Verificar aspiradora
-            // Tratar de conectarse por sockets
-            
+            Communication communication = new Communication();
+
+            try {
+                if (!communication.detenerAspiradora(ip.getText())) {
+                    JOptionPane.showMessageDialog(null, "Error al conectar", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         });
 
         register.addActionListener(e -> {
