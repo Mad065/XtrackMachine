@@ -43,7 +43,7 @@ public class Principal extends JPanel {
                         // Detener aspiradora
                         try {
                             if (!communication.detenerAspiradora(ipAspiradora)) {
-                                JOptionPane.showMessageDialog(null, "Error al detener", "Error", JOptionPane.ERROR_MESSAGE);
+                                JOptionPane.showMessageDialog(null, "Error al detener aspiradora " + ipAspiradora, "Error", JOptionPane.ERROR_MESSAGE);
                             }
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
@@ -54,7 +54,7 @@ public class Principal extends JPanel {
                         // Reiniciar aspiradora
                         try {
                             if (!communication.reiniciarAspiradora(ipAspiradora)) {
-                                JOptionPane.showMessageDialog(null, "Error al reiniciar", "Error", JOptionPane.ERROR_MESSAGE);
+                                JOptionPane.showMessageDialog(null, "Error al reiniciar aspiradora " + ipAspiradora, "Error", JOptionPane.ERROR_MESSAGE);
                             }
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
@@ -65,7 +65,7 @@ public class Principal extends JPanel {
                         // Iniciar aspiradora
                         try {
                             if (!communication.iniciarAspiradora(ipAspiradora)) {
-                                JOptionPane.showMessageDialog(null, "Error al iniciar", "Error", JOptionPane.ERROR_MESSAGE);
+                                JOptionPane.showMessageDialog(null, "Error al iniciar aspiradora " + ipAspiradora, "Error", JOptionPane.ERROR_MESSAGE);
                             }
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
@@ -86,7 +86,9 @@ public class Principal extends JPanel {
                 Arrays.stream(ips).forEach(ip ->
                 {
                     try {
-                        communication.iniciarAspiradora(ip);
+                        if (!communication.iniciarAspiradora(ip)) {
+                            JOptionPane.showMessageDialog(null, "Error al iniciar aspiradora " + ip, "Error", JOptionPane.ERROR_MESSAGE);
+                        }
                     } catch (IOException ex) {
                         throw new RuntimeException(ex);
                     }
@@ -103,7 +105,9 @@ public class Principal extends JPanel {
                 Arrays.stream(ips).forEach(ip ->
                 {
                     try {
-                        communication.detenerAspiradora(ip);
+                        if (!communication.iniciarAspiradora(ip)) {
+                            JOptionPane.showMessageDialog(null, "Error al iniciar aspiradora " + ip, "Error", JOptionPane.ERROR_MESSAGE);
+                        }
                     } catch (IOException ex) {
                         throw new RuntimeException(ex);
                     }
@@ -120,7 +124,9 @@ public class Principal extends JPanel {
                 Arrays.stream(ips).forEach(ip ->
                 {
                     try {
-                        communication.reiniciarAspiradora(ip);
+                        if (!communication.iniciarAspiradora(ip)) {
+                            JOptionPane.showMessageDialog(null, "Error al iniciar aspiradora " + ip, "Error", JOptionPane.ERROR_MESSAGE);
+                        }
                     } catch (IOException ex) {
                         throw new RuntimeException(ex);
                     }

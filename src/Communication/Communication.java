@@ -7,13 +7,17 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.sql.SQLException;
 
 public class Communication {
     public int puerto = 7777;
+    public int timeout = 5000;
 
     public String enviarMensaje(String ip, String mensaje) throws IOException {
         Socket socket = new Socket(ip, puerto);
+        //Tiempo maximo de espera de respuesta
+        socket.setSoTimeout(timeout);
 
         PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
         BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -21,8 +25,16 @@ public class Communication {
         out.println(mensaje);
         System.out.println("Mensaje enviado: " + mensaje);
 
-        String response = in.readLine();
-        System.out.println("Respuesta de ESP32: " + response);
+        String response;
+        try {
+            response = in.readLine(); // Leer la respuesta
+            System.out.println("Respuesta de ESP32: " + response);
+        } catch (SocketTimeoutException e) {
+            System.out.println("Timeout: La ESP32 no respondió en " + timeout + " ms");
+            response = "TIMEOUT"; // Respuesta predeterminada
+        } finally {
+            socket.close();
+        }
         
         return response;
     }
@@ -33,6 +45,9 @@ public class Communication {
 
         if (response.equals("T")) {
             return true;
+        } else if (response.equals("TIMEOUT")) {
+            System.out.println("No se pudo verificar la conexión de la aspiradora " + ip + " : Timeout");
+            return false;
         }
 
         return true;
@@ -49,10 +64,10 @@ public class Communication {
             case "C": estado = 3; break; // (Limpiando)
             case "U": estado = 4; break; // (En uso)
             case "X": estado = 5; break; // (Error)
-            default: estado = 6; break; // (Desconocido)
+            case "TIMEOUT": estado = 6; break; // (Error de conexion)
+            default: estado = 7; break; // (Desconocido)
         }
 
-        // TODO Actualizar la base de datos para usar los estados correctos y hacer codigo para actualizar estado en la base de datos
         Conexion conexion = new Conexion();
         conexion.actualizarAspiradora(ip, estado);
 
@@ -65,6 +80,9 @@ public class Communication {
 
         if (response.equals("T")) {
             return true;
+        } else if (response.equals("TIMEOUT")) {
+            System.out.println("No se pudo detener la aspiradora " + ip + " : Timeout");
+            return false;
         }
 
         return false;
@@ -76,6 +94,9 @@ public class Communication {
 
         if (response.equals("T")) {
             return true;
+        } else if (response.equals("TIMEOUT")) {
+            System.out.println("No se pudo reiniciar la apiradora " + ip + " : Timeout");
+            return false;
         }
 
         return false;
@@ -87,6 +108,9 @@ public class Communication {
 
         if (response.equals("T")) {
             return true;
+        } else if (response.equals("TIMEOUT")) {
+            System.out.println("No se pudo iniciar la aspiradora " + ip + " : Timeout");
+            return false;
         }
 
         return false;
