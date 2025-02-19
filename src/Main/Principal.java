@@ -13,6 +13,9 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class Principal extends JPanel {
     private JButton stop;
@@ -25,9 +28,20 @@ public class Principal extends JPanel {
     private JButton settings;
 
     public Principal(CardLayout cardLayout, JPanel cardPanel) throws SQLException {
+        Communication communication = new Communication();
         llenarTabla();
 
-        Communication communication = new Communication();
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+        Config config = new Config();
+
+        // Actializar cada 3 segundos
+        scheduler.scheduleAtFixedRate(
+                () -> actualizar(communication),
+                config.delay, // Retraso inicial
+                config.interval, // Intervalo
+                TimeUnit.SECONDS // Unidad de tiempo
+        );
 
         table.addMouseListener(new MouseAdapter() {
             @Override

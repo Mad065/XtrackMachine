@@ -1,5 +1,6 @@
 package Main;
 
+import Communication.Communication;
 import SQL.Conexion;
 
 import javax.swing.*;
@@ -8,7 +9,12 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class Manage extends JPanel {
     private JTable table;
@@ -21,6 +27,17 @@ public class Manage extends JPanel {
         Conexion conexion = new Conexion();
         llenarTabla(conexion);
 
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+        Config config = new Config();
+
+        // Actializar cada 3 segundos
+        scheduler.scheduleAtFixedRate(
+                () -> actualizar(conexion),
+                config.delay, // Retraso inicial
+                config.interval, // Intervalo
+                TimeUnit.SECONDS // Unidad de tiempo
+        );
 
         table.addMouseListener(new MouseAdapter() {
             @Override
@@ -57,11 +74,7 @@ public class Manage extends JPanel {
         });
 
         update.addActionListener(e -> {
-            try {
-                llenarTabla(conexion);
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
+            actualizar(conexion);
         });
 
         register.addActionListener(e -> {
@@ -108,5 +121,14 @@ public class Manage extends JPanel {
             table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
 
+    }
+
+    public void actualizar(Conexion conexion) {
+        // Llenar tabla
+        try {
+            llenarTabla(conexion);
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 }

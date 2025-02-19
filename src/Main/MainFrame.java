@@ -7,7 +7,9 @@ import java.awt.*;
 import java.sql.SQLException;
 
 public class MainFrame extends JFrame {
+
     public MainFrame() throws SQLException {
+
         try {
             UIManager.setLookAndFeel(new FlatDarkLaf());
 
