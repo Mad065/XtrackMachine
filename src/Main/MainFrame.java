@@ -1,7 +1,6 @@
 package Main;
 
 import com.formdev.flatlaf.FlatDarkLaf;
-
 import javax.swing.*;
 import java.awt.*;
 import java.sql.SQLException;

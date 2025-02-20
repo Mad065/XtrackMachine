@@ -1,7 +1,6 @@
 package Main;
 
 import SQL.Conexion;
-
 import javax.swing.*;
 import java.awt.*;
 import java.sql.SQLException;

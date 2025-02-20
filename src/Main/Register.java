@@ -2,7 +2,6 @@ package Main;
 
 import Communication.Communication;
 import SQL.Conexion;
-
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
