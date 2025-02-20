@@ -115,4 +115,18 @@ public class Communication {
 
         return false;
     }
+
+    public boolean actualizarRed(String ip, String nuevoSSID, String nuevaPassword) throws IOException {
+        String mensaje = "W:" + nuevoSSID + ":" + nuevaPassword;
+        String response = enviarMensaje(ip, mensaje);
+
+        if (response.equals("T")) {
+            return true;
+        } else if (response.equals("TIMEOUT")) {
+            System.out.println("No se pudo actualizar la red " + ip + " : Timeout");
+            return false;
+        }
+
+        return false;
+    }
 }
