@@ -10,12 +10,12 @@ import java.sql.SQLException;
 public class Settings extends JFrame {
     public JPanel panel;
     private JTable users;
-    private JButton newUser;
+    private JButton buttonUser;
     protected JTextField password;
     private JTextField ssid;
     private JButton update;
     private JTable machines;
-    private JButton newMachine;
+    private JButton buttonMachine;
     private JPasswordField passwordField;
     private JTextField nameField;
     private JTextField nameMachine;
@@ -25,8 +25,8 @@ public class Settings extends JFrame {
         obtenerRed();
         obtenerFresadoras();
 
-
-        newUser.addActionListener(e -> {
+        // Para actualizar usuarios y fresadoras, al presionar editar poner esos datos en los textfield correspondientes y actualizar texto de botones
+        buttonUser.addActionListener(e -> {
             // TODO actualizar base de datos agregando lo de nameField y passwordField
         });
 
@@ -34,7 +34,7 @@ public class Settings extends JFrame {
             // TODO actualizar ssid y password en config.properties y llamar funcion de actualizar red de esp32 actualizarRed() llamar para cada esp
         });
 
-        newMachine.addActionListener(e -> {
+        buttonMachine.addActionListener(e -> {
             // TODO actualizar base de datos agrgando lo de nameMachine
         });
     }
