@@ -121,7 +121,7 @@ public class Conexion {
 
         rs.beforeFirst();
 
-        String[][] datos = new String[rowCount][8];
+        String[][] datos = new String[rowCount][5];
 
         int i = 0;
         while (rs.next()) {
@@ -160,6 +160,46 @@ public class Conexion {
         }
 
         System.out.println(String.join(", ", datos));
+
+        return datos;
+    }
+
+    public String[][] obtenerUsuarios() throws SQLException {
+
+        // Consulta SQL
+        String query = "SELECT nombre, contraseña FROM Usuario";
+
+        Statement stmt = connection.createStatement(
+                ResultSet.TYPE_SCROLL_INSENSITIVE,
+                ResultSet.CONCUR_READ_ONLY
+        );
+        ResultSet rs = stmt.executeQuery(query);
+
+        int rowCount = 0;
+        while (rs.next()) {
+            rowCount++;
+        }
+
+        if (rowCount == 0) {
+            return new String[0][0];
+        }
+
+        rs.beforeFirst();
+
+        String[][] datos = new String[rowCount][4];
+
+        int i = 0;
+        while (rs.next()) {
+            datos[i][0] = String.valueOf(rs.getInt("nombre"));
+            datos[i][1] = rs.getString("contraseña");
+            datos[i][2] = "Editar";
+            datos[i][3] = "Eliminar";
+            i++;
+        }
+
+        for (String[] fila : datos) {
+            System.out.println(String.join(", ", fila));
+        }
 
         return datos;
     }

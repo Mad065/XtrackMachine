@@ -154,7 +154,11 @@ public class Principal extends JPanel {
 
         settings.addActionListener(e -> {
             Settings settings = null;
-            settings = new Settings();
+            try {
+                settings = new Settings();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
             settings.setSize(600, 400);
             settings.setContentPane(settings.panel);
             settings.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
