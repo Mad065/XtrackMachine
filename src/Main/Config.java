@@ -10,6 +10,8 @@ public class Config {
     private static final String CONFIG_FILE = "config.properties";
     public int interval;
     public int delay;
+    public String ssid;
+    public String password;
 
 
     public Config() {
@@ -21,8 +23,10 @@ public class Config {
             e.printStackTrace();
         }
 
-        // Obtener el valor de "mensaje"
+        // Obtener el valor de
         interval = Integer.parseInt(props.getProperty("interval"));
         delay = Integer.parseInt(props.getProperty("delay"));
+        ssid = props.getProperty("SSID");
+        password = props.getProperty("password");
     }
 }
