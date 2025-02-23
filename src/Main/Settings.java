@@ -9,6 +9,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Arrays;
 
 public class Settings extends JFrame {
     public JPanel panel;
@@ -23,8 +24,11 @@ public class Settings extends JFrame {
     private JTextField nameField;
     private JTextField nameMachineField;
 
-    boolean actualizarUsuario = false;
-    boolean actualizarMachine = false;
+    public boolean actualizarUsuario = false;
+    public boolean actualizarMachine = false;
+
+    public String nameUser = "";
+    public String nameMachine = "";
 
     public Settings(Conexion conexion, Config config) throws SQLException {
         obtenerUsuarios(conexion);
@@ -39,7 +43,7 @@ public class Settings extends JFrame {
 
                 if (row >= 0 && col >= 0) {
                     Object cellValue = machines.getValueAt(row, col);
-                    String nameMachine = (String) machines.getValueAt(row, 1);
+                    nameMachine = (String) machines.getValueAt(row, 1);
 
                     if (cellValue.equals("Editar")) {
                         actualizarMachine = !actualizarMachine;
@@ -54,7 +58,11 @@ public class Settings extends JFrame {
                     }
 
                     if (cellValue.equals("Eliminar")) {
-
+                        try {
+                            conexion.eliminarMaquina(nameMachine);
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
                     }
                 }
             }
@@ -68,7 +76,7 @@ public class Settings extends JFrame {
 
                 if (row >= 0 && col >= 0) {
                     Object cellValue = users.getValueAt(row, col);
-                    String nameUser = (String) users.getValueAt(row, 1);
+                    nameUser = (String) users.getValueAt(row, 1);
                     String passwordUser = (String) users.getValueAt(row, 1);
 
                     if (cellValue.equals("Editar")) {
@@ -86,15 +94,30 @@ public class Settings extends JFrame {
                     }
 
                     if (cellValue.equals("Eliminar")) {
-
+                        try {
+                            conexion.eliminarUsuario(nameUser);
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
                     }
                 }
             }
         });
 
-        // Para actualizar usuarios y fresadoras, al presionar editar poner esos datos en los textfield correspondientes y actualizar texto de botones
         buttonUser.addActionListener(e -> {
-            // TODO actualizar base de datos agregando lo de nameField y passwordField
+            if (actualizarUsuario) {
+                try {
+                    conexion.actualizarUsuario(nameUser, Arrays.toString(passwordField.getPassword()), nameField.getText());
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+            } else {
+                try {
+                    conexion.registrarUsuario(nameField.getText(), Arrays.toString(passwordField.getPassword()));
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
         });
 
         update.addActionListener(e -> {
@@ -103,7 +126,7 @@ public class Settings extends JFrame {
 
         buttonMachine.addActionListener(e -> {
             // TODO actualizar base de datos agrgando lo de nameMachine
-            // TODO pensar y coprregir en posibles errores al eliminar maquinas
+            // TODO pensar y coprregir en posibles errores al eliminar maquinas (actualizar el como se actualizan las maquinas de las aspiradoras y como se obtienen, no funcionara el id)
         });
     }
 
