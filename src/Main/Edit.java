@@ -21,12 +21,12 @@ public class Edit extends JFrame {
     protected int idAspiradora;
 
 
-    public Edit(int idAspiradora) throws SQLException {
+    public Edit(int idAspiradora, Conexion conexion) throws SQLException {
 
         this.idAspiradora = idAspiradora;
 
-        llenarComboBox();
-        llenarDatos();
+        llenarComboBox(conexion);
+        llenarDatos(conexion);
 
         idLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         ipLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
@@ -46,7 +46,6 @@ public class Edit extends JFrame {
 
 
             try {
-                Conexion conexion = new Conexion();
                 conexion.conectar();
                 conexion.actualizarAspiradora(idInt, ipText, idMaquina, idEstado);
             } catch (SQLException ex) {
@@ -58,8 +57,7 @@ public class Edit extends JFrame {
         });
     }
 
-    public void llenarComboBox() throws SQLException {
-        Conexion conexion = new Conexion();
+    public void llenarComboBox(Conexion conexion) throws SQLException {
         conexion.conectar();
 
         String[] estados = conexion.obtenerEstados();
@@ -72,8 +70,7 @@ public class Edit extends JFrame {
         maquina.setModel((modelMaquinas));
     }
 
-    public void llenarDatos() throws SQLException {
-        Conexion conexion = new Conexion();
+    public void llenarDatos(Conexion conexion) throws SQLException {
         conexion.conectar();
 
         String[] datos = conexion.obtenerAspiradora(idAspiradora);

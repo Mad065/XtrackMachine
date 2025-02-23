@@ -52,7 +52,7 @@ public class Communication {
         return true;
     }
 
-    public Integer actualizarEstado(String ip) throws IOException, SQLException {
+    public Integer actualizarEstado(String ip, Conexion conexion) throws IOException, SQLException {
         // Update (U)
         String response = enviarMensaje(ip, "U");
         int estado;
@@ -67,7 +67,6 @@ public class Communication {
             default: estado = 7; break; // (Desconocido)
         }
 
-        Conexion conexion = new Conexion();
         conexion.actualizarAspiradora(ip, estado);
 
         return estado;

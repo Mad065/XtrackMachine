@@ -1,5 +1,7 @@
 package Main;
 
+import Communication.Communication;
+import SQL.Conexion;
 import com.formdev.flatlaf.FlatDarkLaf;
 import javax.swing.*;
 import java.awt.*;
@@ -7,7 +9,7 @@ import java.sql.SQLException;
 
 public class MainFrame extends JFrame {
 
-    public MainFrame() throws SQLException {
+    public MainFrame(Conexion conexion, Communication communication, Config config) throws SQLException {
 
         try {
             UIManager.setLookAndFeel(new FlatDarkLaf());
@@ -30,8 +32,8 @@ public class MainFrame extends JFrame {
         CardLayout cardLayout = new CardLayout();
         JPanel cardPanel = new JPanel(cardLayout);
 
-        Principal principalPanel = new Principal(cardLayout, cardPanel);
-        Manage managePanel = new Manage(cardLayout, cardPanel);
+        Principal principalPanel = new Principal(cardLayout, cardPanel, conexion, communication, config);
+        Manage managePanel = new Manage(cardLayout, cardPanel, conexion, communication, config);
 
         cardPanel.add(principalPanel.panel, "Principal");
         cardPanel.add(managePanel.panel, "Manage");

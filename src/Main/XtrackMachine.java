@@ -1,5 +1,6 @@
 package Main;
 
+import Communication.Communication;
 import com.formdev.flatlaf.FlatDarkLaf;
 import javax.swing.*;
 import SQL.Conexion;
@@ -14,7 +15,12 @@ public class XtrackMachine extends JFrame {
 
     public XtrackMachine()  {
         Conexion conexion = new Conexion();
+        Communication communication = new Communication();
+        Config config = new Config();
+
+
         conexion.conectar();
+
         start.addActionListener(e -> {
             try {
                 String usernameText = username.getText();
@@ -29,7 +35,7 @@ public class XtrackMachine extends JFrame {
                         System.err.println("Fallo al inicializar FlatLaf: " + ex.getMessage());
                     }
 
-                    MainFrame frame = new MainFrame();
+                    MainFrame frame = new MainFrame(conexion, communication, config);
 
                     this.dispose();
                 } else {

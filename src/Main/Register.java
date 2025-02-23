@@ -21,8 +21,8 @@ public class Register extends JFrame {
     private JLabel estadoLabel;
     private JLabel verification;
 
-    public Register() throws SQLException {
-        llenarComboBox();
+    public Register(Conexion conexion, Communication communication) throws SQLException {
+        llenarComboBox(conexion);
 
         idLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         ipLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
@@ -30,7 +30,6 @@ public class Register extends JFrame {
         estadoLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 
         verify.addActionListener(e -> {
-            Communication communication = new Communication();
 
             try {
                 if (!communication.detenerAspiradora(ip.getText())) {
@@ -49,7 +48,6 @@ public class Register extends JFrame {
 
 
             try {
-                Conexion conexion = new Conexion();
                 conexion.conectar();
                 conexion.registrarAspiradora(idInt, ipText, idMaquina, idEstado);
             } catch (SQLException ex) {
@@ -61,8 +59,7 @@ public class Register extends JFrame {
         });
     }
 
-    public void llenarComboBox() throws SQLException {
-        Conexion conexion = new Conexion();
+    public void llenarComboBox(Conexion conexion) throws SQLException {
         conexion.conectar();
 
         String[] estados = conexion.obtenerEstados();

@@ -25,13 +25,11 @@ public class Principal extends JPanel {
     private JButton update;
     private JButton settings;
 
-    public Principal(CardLayout cardLayout, JPanel cardPanel) throws SQLException {
-        Communication communication = new Communication();
-        llenarTabla();
+    public Principal(CardLayout cardLayout, JPanel cardPanel, Conexion conexion, Communication communication, Config config) throws SQLException {
+        llenarTabla(conexion);
 
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
-        Config config = new Config();
         String panelActivo = "";
 
         // Verificar panel activo
@@ -45,7 +43,7 @@ public class Principal extends JPanel {
         if (panelActivo.equals("Principal")) {
             // Actializar cada 3 segundos
             scheduler.scheduleAtFixedRate(
-                    () -> actualizar(communication),
+                    () -> actualizar(conexion, communication),
                     config.delay, // Retraso inicial
                     config.interval, // Intervalo
                     TimeUnit.SECONDS // Unidad de tiempo
@@ -99,13 +97,13 @@ public class Principal extends JPanel {
         });
 
         update.addActionListener( e -> {
-            actualizar(communication);
+            actualizar(conexion, communication);
         });
 
         start.addActionListener(e -> {
             // Iniciar todas las aspiradoras
             try {
-                String[] ips = obtenerIPs();
+                String[] ips = obtenerIPs(conexion);
                 Arrays.stream(ips).forEach(ip ->
                 {
                     try {
@@ -124,7 +122,7 @@ public class Principal extends JPanel {
         stop.addActionListener(e -> {
             // Detener todas las aspiradoras
             try {
-                String[] ips = obtenerIPs();
+                String[] ips = obtenerIPs(conexion);
                 Arrays.stream(ips).forEach(ip ->
                 {
                     try {
@@ -143,7 +141,7 @@ public class Principal extends JPanel {
         reboot.addActionListener(e -> {
             // Reiniciar todas las aspiradoras
             try {
-                String[] ips = obtenerIPs();
+                String[] ips = obtenerIPs(conexion);
                 Arrays.stream(ips).forEach(ip ->
                 {
                     try {
@@ -166,7 +164,7 @@ public class Principal extends JPanel {
         settings.addActionListener(e -> {
             Settings settings = null;
             try {
-                settings = new Settings();
+                settings = new Settings(conexion, config);
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
@@ -178,8 +176,7 @@ public class Principal extends JPanel {
         });
     }
 
-    public void llenarTabla() throws SQLException {
-        Conexion conexion = new Conexion();
+    public void llenarTabla(Conexion conexion) throws SQLException {
         conexion.conectar();
 
         String[][] datos = conexion.obtenerAspiradoras();
@@ -205,8 +202,7 @@ public class Principal extends JPanel {
         }
     }
 
-    public String[] obtenerIPs() throws SQLException {
-        Conexion conexion = new Conexion();
+    public String[] obtenerIPs(Conexion conexion) throws SQLException {
         conexion.conectar();
 
         String[] ips = conexion.obtenerIPs();
@@ -214,14 +210,14 @@ public class Principal extends JPanel {
         return ips;
     }
 
-    public void actualizar(Communication communication) {
+    public void actualizar(Conexion conexion,Communication communication) {
         // Actualizar estados de todas las aspiradoras
         try {
-            String[] ips = obtenerIPs();
+            String[] ips = obtenerIPs(conexion);
             Arrays.stream(ips).forEach(ip ->
             {
                 try {
-                    communication.actualizarEstado(ip);
+                    communication.actualizarEstado(ip, conexion);
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 } catch (SQLException e) {
@@ -234,7 +230,7 @@ public class Principal extends JPanel {
 
         // Llenar tabla
         try {
-            llenarTabla();
+            llenarTabla(conexion);
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
         }

@@ -5,6 +5,9 @@ import SQL.Conexion;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.sql.SQLException;
 
 public class Settings extends JFrame {
@@ -18,12 +21,76 @@ public class Settings extends JFrame {
     private JButton buttonMachine;
     private JPasswordField passwordField;
     private JTextField nameField;
-    private JTextField nameMachine;
+    private JTextField nameMachineField;
 
-    public Settings() throws SQLException {
-        obtenerUsuarios();
-        obtenerRed();
-        obtenerFresadoras();
+    boolean actualizarUsuario = false;
+    boolean actualizarMachine = false;
+
+    public Settings(Conexion conexion, Config config) throws SQLException {
+        obtenerUsuarios(conexion);
+        obtenerRed(config);
+        obtenerFresadoras(conexion);
+
+        machines.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int row = machines.rowAtPoint(e.getPoint());
+                int col = machines.columnAtPoint(e.getPoint());
+
+                if (row >= 0 && col >= 0) {
+                    Object cellValue = machines.getValueAt(row, col);
+                    String nameMachine = (String) machines.getValueAt(row, 1);
+
+                    if (cellValue.equals("Editar")) {
+                        actualizarMachine = !actualizarMachine;
+
+                        if (actualizarMachine) {
+                            nameMachineField.setText(nameMachine);
+                            buttonMachine.setText("Actualizar fresadora");
+                        } else {
+                            nameMachineField.setText("");
+                            buttonMachine.setText("Añadir nueva fresadora");
+                        }
+                    }
+
+                    if (cellValue.equals("Eliminar")) {
+
+                    }
+                }
+            }
+        });
+
+        users.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int row = users.rowAtPoint(e.getPoint());
+                int col = users.columnAtPoint(e.getPoint());
+
+                if (row >= 0 && col >= 0) {
+                    Object cellValue = users.getValueAt(row, col);
+                    String nameUser = (String) users.getValueAt(row, 1);
+                    String passwordUser = (String) users.getValueAt(row, 1);
+
+                    if (cellValue.equals("Editar")) {
+                        actualizarUsuario = !actualizarUsuario;
+
+                        if (actualizarUsuario) {
+                            nameField.setText(nameUser);
+                            passwordField.setText(passwordUser);
+                            buttonUser.setText("Actualizar usuario");
+                        } else {
+                            nameField.setText("");
+                            passwordField.setText("");
+                            buttonUser.setText("Crear nuevo usuario");
+                        }
+                    }
+
+                    if (cellValue.equals("Eliminar")) {
+
+                    }
+                }
+            }
+        });
 
         // Para actualizar usuarios y fresadoras, al presionar editar poner esos datos en los textfield correspondientes y actualizar texto de botones
         buttonUser.addActionListener(e -> {
@@ -36,12 +103,12 @@ public class Settings extends JFrame {
 
         buttonMachine.addActionListener(e -> {
             // TODO actualizar base de datos agrgando lo de nameMachine
+            // TODO pensar y coprregir en posibles errores al eliminar maquinas
         });
     }
 
-    public void obtenerRed() {
+    public void obtenerRed(Config config) {
         // Obtener ssid y contraseña
-        Config config = new Config();
         String ssidText = config.ssid;
         String passwordText = config.password;
 
@@ -49,8 +116,7 @@ public class Settings extends JFrame {
         ssid.setText(ssidText);
     }
 
-    public void obtenerFresadoras() throws SQLException {
-        Conexion conexion = new Conexion();
+    public void obtenerFresadoras(Conexion conexion) throws SQLException {
         String[] maquinas = conexion.obtenerMaquinas();
 
         // Matriz de datos
@@ -83,8 +149,7 @@ public class Settings extends JFrame {
         }
     }
 
-    public void obtenerUsuarios() throws SQLException {
-        Conexion conexion = new Conexion();
+    public void obtenerUsuarios(Conexion conexion) throws SQLException {
         String[][] datos = conexion.obtenerUsuarios();
 
         String[] columnas = {"Nombre","Contraseña", "Editar", "Eliminar"};

@@ -1,5 +1,6 @@
 package Main;
 
+import Communication.Communication;
 import SQL.Conexion;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -19,13 +20,11 @@ public class Manage extends JPanel {
     private JButton principal;
     private JButton update;
 
-    public Manage(CardLayout cardLayout, JPanel cardPanel) throws SQLException {
-        Conexion conexion = new Conexion();
+    public Manage(CardLayout cardLayout, JPanel cardPanel, Conexion conexion, Communication communication, Config config) throws SQLException {
         llenarTabla(conexion);
 
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
-        Config config = new Config();
         String panelActivo = "";
 
         // Verificar panel activo
@@ -58,7 +57,7 @@ public class Manage extends JPanel {
                     if (cellValue.equals("Editar")) {
                         Edit edit = null;
                         try {
-                            edit = new Edit(idAspiradora);
+                            edit = new Edit(idAspiradora, conexion);
                         } catch (SQLException ex) {
                             throw new RuntimeException(ex);
                         }
@@ -87,7 +86,7 @@ public class Manage extends JPanel {
         register.addActionListener(e -> {
             Register register = null;
             try {
-                register = new Register();
+                register = new Register(conexion, communication);
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
