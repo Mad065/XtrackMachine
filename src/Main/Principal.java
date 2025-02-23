@@ -32,14 +32,25 @@ public class Principal extends JPanel {
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
         Config config = new Config();
+        String panelActivo = "";
 
-        // Actializar cada 3 segundos
-        scheduler.scheduleAtFixedRate(
-                () -> actualizar(communication),
-                config.delay, // Retraso inicial
-                config.interval, // Intervalo
-                TimeUnit.SECONDS // Unidad de tiempo
-        );
+        // Verificar panel activo
+        for (Component comp : cardPanel.getComponents()) {
+            if (comp.isVisible()) {
+                panelActivo = comp.getName();
+                System.out.println("El panel activo es: " + panelActivo);
+            }
+        }
+
+        if (panelActivo.equals("Principal")) {
+            // Actializar cada 3 segundos
+            scheduler.scheduleAtFixedRate(
+                    () -> actualizar(communication),
+                    config.delay, // Retraso inicial
+                    config.interval, // Intervalo
+                    TimeUnit.SECONDS // Unidad de tiempo
+            );
+        }
 
         table.addMouseListener(new MouseAdapter() {
             @Override
