@@ -311,6 +311,38 @@ public class Conexion {
         ps.executeUpdate();
     }
 
+    public void registrarUsuario(String name, String password) throws SQLException {
+        String query = "INSERT INTO Usuario (nombre, contraseña, tipo) VALUE (?, ?, 1);";
+        PreparedStatement ps = connection.prepareStatement(query);
+        ps.setString(1, name);
+        ps.setString(2, password);
+        ps.executeUpdate();
+    }
+
+    public void registrarMaquina(String nameMachine) throws SQLException {
+        String query = "INSERT INTO Maquina (nombre) VALUE (?)";
+        PreparedStatement ps = connection.prepareStatement(query);
+        ps.setString(1, nameMachine);
+        ps.executeUpdate();
+    }
+
+    public void actualizarUsuario(String name, String newPassword, String newName) throws SQLException {
+        String query = "UPDATE Usuario SET nombre = ?, contraseña = ?, tipo = 1 WHERE nombre = ?;";
+        PreparedStatement ps = connection.prepareStatement(query);
+        ps.setString(1, newName);
+        ps.setString(2, newPassword);
+        ps.setString(3, name);
+        ps.executeUpdate();
+    }
+
+    public void actualizarMaquina(String nameMachine, String newNameMachine) throws SQLException {
+        String query = "UPDATE Maquina SET nombre = ? WHERE nombre = ?;";
+        PreparedStatement ps = connection.prepareStatement(query);
+        ps.setString(1, newNameMachine);
+        ps.setString(2, nameMachine);
+        ps.executeUpdate();
+    }
+
     public void actualizarAspiradora(int id, String ip, int maquina, int estado) throws SQLException {
         String query = "UPDATE Aspiradora SET ip = ?, maquina = ?, estado = ? WHERE id = ?";
         PreparedStatement ps = connection.prepareStatement(query);
@@ -335,4 +367,19 @@ public class Conexion {
         ps.setInt(1, id);
         ps.executeQuery();
     }
+
+    public void eliminarUsuario(String name) throws SQLException {
+        String query = "DELETE FROM Usuario WHERE nombre = ?;";
+        PreparedStatement ps = connection.prepareStatement(query);
+        ps.setString(1, name);
+        ps.executeQuery();
+    }
+
+    public void eliminarMaquina(String nameMachine) throws SQLException {
+        String query = "DELETE FROM Maquina WHERE nombre = ?;";
+        PreparedStatement ps = connection.prepareStatement(query);
+        ps.setString(1, nameMachine);
+        ps.executeQuery();
+    }
+
 }
