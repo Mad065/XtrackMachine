@@ -7,7 +7,7 @@ import java.util.Properties;
 
 public class Config {
 
-    private static final String CONFIG_FILE = "config.properties";
+    private static final String CONFIG_FILE = "src/Main/config.properties";
     public int interval;
     public int delay;
     public String ssid;
