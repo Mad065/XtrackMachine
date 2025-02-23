@@ -6,9 +6,11 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.HierarchyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.io.Serial;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.concurrent.Executors;
@@ -30,25 +32,13 @@ public class Principal extends JPanel {
 
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
-        String panelActivo = "";
-
-        // Verificar panel activo
-        for (Component comp : cardPanel.getComponents()) {
-            if (comp.isVisible()) {
-                panelActivo = comp.getName();
-                System.out.println("El panel activo es: " + panelActivo);
-            }
-        }
-
-        if (panelActivo.equals("Principal")) {
-            // Actializar cada 3 segundos
-            scheduler.scheduleAtFixedRate(
-                    () -> actualizar(conexion, communication),
-                    config.delay, // Retraso inicial
-                    config.interval, // Intervalo
-                    TimeUnit.SECONDS // Unidad de tiempo
-            );
-        }
+        // Actializar cada 3 segundos
+        scheduler.scheduleAtFixedRate(
+                () -> actualizar(conexion, communication),
+                config.delay, // Retraso inicial
+                config.interval, // Intervalo
+                TimeUnit.SECONDS // Unidad de tiempo
+        );
 
         table.addMouseListener(new MouseAdapter() {
             @Override
@@ -212,6 +202,7 @@ public class Principal extends JPanel {
 
     public void actualizar(Conexion conexion,Communication communication) {
         // Actualizar estados de todas las aspiradoras
+        System.out.println("Actualizando Principal");
         try {
             String[] ips = obtenerIPs(conexion);
             Arrays.stream(ips).forEach(ip ->
