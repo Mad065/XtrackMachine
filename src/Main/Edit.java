@@ -41,9 +41,18 @@ public class Edit extends JFrame {
         update.addActionListener(e -> {
             int idInt = Integer.parseInt(id.getText());
             String ipText = ip.getText();
-            int idMaquina = maquina.getSelectedIndex() + 1;
-            int idEstado = estado.getSelectedIndex() + 1;
+            String nameMaquina = String.valueOf(maquina.getSelectedItem());
+            String nameEstado = String.valueOf(estado.getSelectedItem());
 
+            int idMaquina = 1;
+            int idEstado = 1;
+
+            try {
+                idMaquina = conexion.obtenerIdMaquina(nameMaquina);
+                idEstado = conexion.obtenerIdEstado(nameEstado);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
 
             try {
                 conexion.conectar();
@@ -77,7 +86,7 @@ public class Edit extends JFrame {
 
         id.setText(datos[0]);
         ip.setText(datos[1]);
-        maquina.setSelectedIndex(Integer.parseInt(datos[2]) - 1);
-        estado.setSelectedIndex(Integer.parseInt(datos[3]) - 1);
+        maquina.setSelectedItem(datos[2]);
+        estado.setSelectedItem(datos[3]);
     }
 }

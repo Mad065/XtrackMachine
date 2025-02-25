@@ -40,12 +40,23 @@ public class Register extends JFrame {
             }
         });
 
+        // TODO incorporar busqueda de ESP en la red
+
         register.addActionListener(e -> {
             int idInt = Integer.parseInt(id.getText());
             String ipText = ip.getText();
-            int idMaquina = maquina.getSelectedIndex() + 1;
-            int idEstado = estado.getSelectedIndex() + 1;
+            String nameMaquina = String.valueOf(maquina.getSelectedItem());
+            String nameEstado = String.valueOf(estado.getSelectedItem());
 
+            int idMaquina = 1;
+            int idEstado = 1;
+
+            try {
+                idMaquina = conexion.obtenerIdMaquina(nameMaquina);
+                idEstado = conexion.obtenerIdEstado(nameEstado);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
 
             try {
                 conexion.conectar();
