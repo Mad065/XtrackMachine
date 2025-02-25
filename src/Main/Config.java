@@ -13,10 +13,10 @@ public class Config {
     public String ssid;
     public String password;
 
+    Properties props = new Properties();
 
     public Config() {
         // Leer el archivo de configuración
-        Properties props = new Properties();
         try (InputStream input = new FileInputStream(CONFIG_FILE)) {
             props.load(input);
         } catch (IOException e) {
@@ -28,5 +28,15 @@ public class Config {
         delay = Integer.parseInt(props.getProperty("delay"));
         ssid = props.getProperty("SSID");
         password = props.getProperty("password");
+    }
+
+    public void setSsid(String ssid) {
+        this.ssid = ssid;
+        props.setProperty("SSID", ssid);
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+        props.setProperty("password", password);
     }
 }
