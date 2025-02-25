@@ -141,7 +141,13 @@ public class Conexion {
     }
 
     public String[] obtenerAspiradora(int idAspiradora) throws SQLException {
-        String query = "SELECT * FROM Aspiradora WHERE id = ?";
+        String query = """
+                SELECT a.id, a.ip, m.nombre AS maquina, e.nombre AS estado
+                FROM Aspiradora a
+                INNER JOIN Maquina m ON a.maquina = m.id
+                INNER JOIN Estado e ON a.estado = e.id
+                WHERE a.id = ?;
+                """;
         PreparedStatement ps = connection.prepareStatement(query);
         ps.setInt(1, idAspiradora);
         ResultSet rs = ps.executeQuery();
@@ -269,6 +275,14 @@ public class Conexion {
         return datos;
     }
 
+    public int obtenerIdMaquina(String nameMaquina) throws SQLException {
+        String query = "SELECT id FROM Maquina WHERE nombre = ?;";
+        PreparedStatement ps = connection.prepareStatement(query);
+        ps.setString(1, nameMaquina);
+        ResultSet rs = ps.executeQuery();
+        return rs.getInt("id");
+    }
+
     public String[] obtenerEstados() throws SQLException {
         String query = "SELECT nombre FROM Estado";
         Statement stmt = connection.createStatement(
@@ -299,6 +313,14 @@ public class Conexion {
         System.out.println(String.join(", ", datos));
 
         return datos;
+    }
+
+    public int obtenerIdEstado(String nameEstado) throws SQLException {
+        String query = "SELECT id FROM Maquina WHERE nombre = ?;";
+        PreparedStatement ps = connection.prepareStatement(query);
+        ps.setString(1, nameEstado);
+        ResultSet rs = ps.executeQuery();
+        return rs.getInt("id");
     }
 
     public void registrarAspiradora(int id, String ip, int maquina, int estado) throws SQLException {

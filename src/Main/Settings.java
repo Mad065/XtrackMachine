@@ -1,5 +1,6 @@
 package Main;
 
+import Communication.Communication;
 import SQL.Conexion;
 
 import javax.swing.*;
@@ -15,7 +16,7 @@ public class Settings extends JFrame {
     public JPanel panel;
     private JTable users;
     private JButton buttonUser;
-    protected JTextField password;
+    protected JPasswordField password;
     private JTextField ssid;
     private JButton update;
     private JTable machines;
@@ -30,7 +31,7 @@ public class Settings extends JFrame {
     public String nameUser = "";
     public String nameMachine = "";
 
-    public Settings(Conexion conexion, Config config) throws SQLException {
+    public Settings(Conexion conexion, Communication communication, Config config) throws SQLException {
         obtenerUsuarios(conexion);
         obtenerRed(config);
         obtenerFresadoras(conexion);
@@ -104,6 +105,7 @@ public class Settings extends JFrame {
             }
         });
 
+        // Actualizar Usuarios en la base de datos
         buttonUser.addActionListener(e -> {
             if (actualizarUsuario) {
                 try {
@@ -120,13 +122,48 @@ public class Settings extends JFrame {
             }
         });
 
+        // Boton para actualizar las credenciales de red
         update.addActionListener(e -> {
-            // TODO actualizar ssid y password en config.properties y llamar funcion de actualizar red de esp32 actualizarRed() llamar para cada esp
+            String ssidText = ssid.getText();
+            String passwordText = Arrays.toString(password.getPassword());
+
+            // Actualizar en config
+            config.setSsid(ssidText);
+            config.setPassword(passwordText);
+
+            // Actualizar red de las esp de las aspiradoras
+            try {
+                String[] ips = conexion.obtenerIPs();
+                Arrays.stream(ips).forEach(ip ->
+                {
+                    try {
+                        if (!communication.actualizarRed(ip, ssidText, passwordText)) {
+                            JOptionPane.showMessageDialog(null, "Error al actualizar red de aspiradora " + ip, "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                });
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
         });
 
+        // Actualizar Maquinas en la base de datos
         buttonMachine.addActionListener(e -> {
-            // TODO actualizar base de datos agrgando lo de nameMachine
-            // TODO pensar y coprregir en posibles errores al eliminar maquinas (actualizar el como se actualizan las maquinas de las aspiradoras y como se obtienen, no funcionara el id)
+            if (actualizarMachine) {
+                try {
+                    conexion.actualizarMaquina(nameMachine, nameMachineField.getText());
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+            } else {
+                try {
+                    conexion.registrarMaquina(nameMachineField.getText());
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
         });
     }
 
