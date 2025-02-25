@@ -93,7 +93,7 @@ public class Principal extends JPanel {
         start.addActionListener(e -> {
             // Iniciar todas las aspiradoras
             try {
-                String[] ips = obtenerIPs(conexion);
+                String[] ips = conexion.obtenerIPs();
                 Arrays.stream(ips).forEach(ip ->
                 {
                     try {
@@ -112,7 +112,7 @@ public class Principal extends JPanel {
         stop.addActionListener(e -> {
             // Detener todas las aspiradoras
             try {
-                String[] ips = obtenerIPs(conexion);
+                String[] ips = conexion.obtenerIPs();
                 Arrays.stream(ips).forEach(ip ->
                 {
                     try {
@@ -131,7 +131,7 @@ public class Principal extends JPanel {
         reboot.addActionListener(e -> {
             // Reiniciar todas las aspiradoras
             try {
-                String[] ips = obtenerIPs(conexion);
+                String[] ips = conexion.obtenerIPs();
                 Arrays.stream(ips).forEach(ip ->
                 {
                     try {
@@ -154,7 +154,7 @@ public class Principal extends JPanel {
         settings.addActionListener(e -> {
             Settings settings = null;
             try {
-                settings = new Settings(conexion, config);
+                settings = new Settings(conexion, communication,config);
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
@@ -192,19 +192,11 @@ public class Principal extends JPanel {
         }
     }
 
-    public String[] obtenerIPs(Conexion conexion) throws SQLException {
-        conexion.conectar();
-
-        String[] ips = conexion.obtenerIPs();
-
-        return ips;
-    }
-
     public void actualizar(Conexion conexion,Communication communication) {
         // Actualizar estados de todas las aspiradoras
         System.out.println("Actualizando Principal");
         try {
-            String[] ips = obtenerIPs(conexion);
+            String[] ips = conexion.obtenerIPs();
             Arrays.stream(ips).forEach(ip ->
             {
                 try {
