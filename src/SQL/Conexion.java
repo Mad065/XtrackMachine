@@ -5,19 +5,12 @@ import java.sql.*;
 public class Conexion {
 
     Connection connection;
-    String url = "jdbc:mysql://127.0.0.1:3306/GyroCleaner";
+    String url = "jdbc:mysql://127.0.0.1:3306/XtrackMachine";
     String user = "root";
     String password = "";
 
     public Conexion () {
 
-    }
-
-    public Conexion(Connection connection, String url, String user, String password) {
-        this.connection = connection;
-        this.url = url;
-        this.user = user;
-        this.password = password;
     }
 
     public void conectar() {
