@@ -24,6 +24,7 @@ public class Settings extends JFrame {
     private JPasswordField passwordField;
     private JTextField nameField;
     private JTextField nameMachineField;
+    private JButton updateESP;
 
     public boolean actualizarUsuario = false;
     public boolean actualizarMachine = false;
@@ -122,7 +123,7 @@ public class Settings extends JFrame {
             }
         });
 
-        // Boton para actualizar las credenciales de red
+        // Boton para actualizar las credenciales de red en config
         update.addActionListener(e -> {
             String ssidText = ssid.getText();
             String passwordText = Arrays.toString(password.getPassword());
@@ -130,6 +131,12 @@ public class Settings extends JFrame {
             // Actualizar en config
             config.setSsid(ssidText);
             config.setPassword(passwordText);
+        });
+
+        // Boton para actualizar las credenciales de red en ESPs de aspiradoras
+        updateESP.addActionListener(e -> {
+            String ssidText = ssid.getText();
+            String passwordText = Arrays.toString(password.getPassword());
 
             // Actualizar red de las esp de las aspiradoras
             try {
