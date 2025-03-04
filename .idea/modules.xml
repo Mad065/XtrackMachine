@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/GyroCleaner.iml" filepath="$PROJECT_DIR$/GyroCleaner.iml" />
+      <module fileurl="file://$PROJECT_DIR$/XtrackMachine.iml" filepath="$PROJECT_DIR$/XtrackMachine.iml" />
     </modules>
   </component>
 </project>
