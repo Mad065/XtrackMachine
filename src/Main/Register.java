@@ -23,6 +23,7 @@ public class Register extends JFrame {
     private JLabel estadoLabel;
     private JLabel verification;
     private JButton searchButton;
+    private JLabel verifyLabel;
 
     public Register(Conexion conexion, Communication communication, Config config) throws SQLException {
 
@@ -34,10 +35,11 @@ public class Register extends JFrame {
         estadoLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 
         verify.addActionListener(e -> {
-
             try {
-                if (!communication.detenerAspiradora(ip.getText())) {
-                    JOptionPane.showMessageDialog(null, "Error al conectar", "Error", JOptionPane.ERROR_MESSAGE);
+                if (!communication.verificarConexion(ip.getText())) {
+                    verifyLabel.setText("No se pudo verificar la conexion");
+                } else {
+                    verifyLabel.setText("Conexion verificada");
                 }
             } catch (IOException ex) {
                 throw new RuntimeException(ex);

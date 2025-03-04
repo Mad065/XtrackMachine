@@ -45,7 +45,7 @@ public class Manage extends JPanel {
                     if (cellValue.equals("Editar")) {
                         Edit edit = null;
                         try {
-                            edit = new Edit(idAspiradora, conexion);
+                            edit = new Edit(idAspiradora, conexion, communication, config);
                         } catch (SQLException ex) {
                             throw new RuntimeException(ex);
                         }
