@@ -12,6 +12,8 @@ public class Config {
     public int delay;
     public String ssid;
     public String password;
+    public String ip;
+    public String broadcast;
 
     Properties props = new Properties();
 
@@ -28,6 +30,8 @@ public class Config {
         delay = Integer.parseInt(props.getProperty("delay"));
         ssid = props.getProperty("SSID");
         password = props.getProperty("password");
+        ip = props.getProperty("ipRed");
+        broadcast = props.getProperty("broadcast");
     }
 
     public void setSsid(String ssid) {

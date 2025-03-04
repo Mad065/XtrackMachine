@@ -5,38 +5,41 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.Socket;
-import java.net.SocketTimeoutException;
+import java.net.*;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Communication {
     public int puerto = 7777;
     public int timeout = 5000;
 
-    public String enviarMensaje(String ip, String mensaje) throws IOException {
-        Socket socket = new Socket(ip, puerto);
-        //Tiempo maximo de espera de respuesta
-        socket.setSoTimeout(timeout);
+    public String enviarMensaje(String ip, String mensaje) {
+        try (Socket socket = new Socket(ip, puerto)) {
+            socket.setSoTimeout(timeout); // Tiempo máximo de espera
 
-        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            try (PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
 
-        out.println(mensaje);
-        System.out.println("Mensaje enviado: " + mensaje);
+                out.println(mensaje);
+                System.out.println("Mensaje enviado: " + mensaje);
 
-        String response;
-        try {
-            response = in.readLine(); // Leer la respuesta
-            System.out.println("Respuesta de ESP32: " + response);
+                // Leer la respuesta
+                String response = in.readLine();
+                System.out.println("Respuesta de ESP32: " + (response != null ? response : "Sin respuesta"));
+
+                return response != null ? response : "SIN RESPUESTA";
+            }
+
         } catch (SocketTimeoutException e) {
             System.out.println("Timeout: La ESP32 no respondió en " + timeout + " ms");
-            response = "TIMEOUT"; // Respuesta predeterminada
-        } finally {
-            socket.close();
+            return "TIMEOUT";
+        } catch (IOException e) {
+            System.out.println("Error de comunicación con " + ip + ": " + e.getMessage());
+            return "ERROR";
         }
-        
-        return response;
     }
+
 
     public boolean verificarConexion(String ip) throws IOException {
         // Verification (V)
@@ -126,5 +129,37 @@ public class Communication {
         }
 
         return false;
+    }
+
+    public List<String> obtenerIPs(String broadcastIP) throws IOException {
+        List<String> respuestas = new ArrayList<>();
+        DatagramSocket socket = new DatagramSocket();
+        socket.setBroadcast(true);
+        socket.setSoTimeout(10000); // 10 segundos
+
+        byte[] mensaje = "G".getBytes(); // Mensaje de búsqueda
+        DatagramPacket paqueteEnvio = new DatagramPacket(mensaje, mensaje.length, InetAddress.getByName(broadcastIP), puerto);
+        // Enviar mensaje
+        socket.send(paqueteEnvio);
+
+        byte[] buffer = new byte[1024];
+
+        while (true) {
+            try {
+                DatagramPacket paqueteRecibido = new DatagramPacket(buffer, buffer.length);
+                socket.receive(paqueteRecibido); // Esperar respuestas
+
+                String ipRemota = paqueteRecibido.getAddress().getHostAddress();
+                System.out.println("Respuesta recibida desde " + ipRemota);
+
+                respuestas.add(ipRemota);
+            } catch (SocketTimeoutException e) {
+                System.out.println("Finalizando recepción de respuestas...");
+                break; // Terminar cuando se acabe el tiempo de espera
+            }
+        }
+
+        socket.close();
+        return respuestas;
     }
 }

@@ -74,7 +74,7 @@ public class Manage extends JPanel {
         register.addActionListener(e -> {
             Register register = null;
             try {
-                register = new Register(conexion, communication);
+                register = new Register(conexion, communication, config);
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }

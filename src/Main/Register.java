@@ -4,6 +4,8 @@ import Communication.Communication;
 import SQL.Conexion;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -20,8 +22,10 @@ public class Register extends JFrame {
     private JLabel maquinaLabel;
     private JLabel estadoLabel;
     private JLabel verification;
+    private JButton searchButton;
 
-    public Register(Conexion conexion, Communication communication) throws SQLException {
+    public Register(Conexion conexion, Communication communication, Config config) throws SQLException {
+
         llenarComboBox(conexion);
 
         idLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
@@ -40,7 +44,37 @@ public class Register extends JFrame {
             }
         });
 
-        // TODO incorporar busqueda de ESP en la red
+        searchButton.addActionListener(e -> {
+            final boolean[] ventanaCerrada = {false};
+            Search search = null;
+            try {
+                search = new Search(communication, config);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            search.setSize(600, 400);
+            search.setContentPane(search.panel);
+            search.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            search.setLocationRelativeTo(null);
+            search.setVisible(true);
+            search.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    ventanaCerrada[0] = true;
+                    System.out.println("La ventana se ha cerrado.");
+                }
+            });
+
+            // Desactivar ventana actual
+            this.setEnabled(false);
+
+            if (ventanaCerrada[0]) {
+                // Establecer en textfield la ip seleccionada en la ventana de busqueda
+                ip.setText(search.ipMachine.toString());
+                // Activar ventana al cerrar centana de busqueda
+                this.setEnabled(true);
+            }
+        });
 
         register.addActionListener(e -> {
             int idInt = Integer.parseInt(id.getText());
@@ -65,6 +99,7 @@ public class Register extends JFrame {
                 JOptionPane.showMessageDialog(null, "Error al realizar la operación en la base de datos: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
 
+            // Cerrar ventana
             this.dispose();
             JOptionPane.showMessageDialog(null, "Aspiradora registrada exitosamente");
         });

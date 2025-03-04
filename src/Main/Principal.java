@@ -86,6 +86,8 @@ public class Principal extends JPanel {
             }
         });
 
+        // TODO en ves de recorrer todas las ip se puede por broadcast, revisar que es mas conveniente
+
         update.addActionListener( e -> {
             actualizar(conexion, communication);
         });

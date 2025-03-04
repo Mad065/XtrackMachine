@@ -37,6 +37,8 @@ public class Settings extends JFrame {
         obtenerRed(config);
         obtenerFresadoras(conexion);
 
+        // TODO poder establecer y editar la ip de la red y el broadcast
+
         machines.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
