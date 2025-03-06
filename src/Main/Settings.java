@@ -25,8 +25,9 @@ public class Settings extends JFrame {
     private JTextField nameField;
     private JTextField nameMachineField;
     private JButton updateESP;
-    private JTextField ipRed;
+    private JTextField gateway;
     private JTextField broadcast;
+    private JTextField mask;
 
     public boolean actualizarUsuario = false;
     public boolean actualizarMachine = false;
@@ -131,14 +132,16 @@ public class Settings extends JFrame {
         update.addActionListener(e -> {
             String ssidText = ssid.getText();
             String passwordText = Arrays.toString(password.getPassword());
-            String ipRedText = ipRed.getText();
+            String ipRedText = gateway.getText();
             String broadcastText = broadcast.getText();
+            String maskText = mask.getText();
 
             // Actualizar en config
             config.setSsid(ssidText);
             config.setPassword(passwordText);
-            config.setIp(ipRedText);
+            config.setGateway(ipRedText);
             config.setBroadcast(broadcastText);
+            config.setMask(maskText);
         });
 
         // Boton para actualizar las credenciales de red en ESPs de aspiradoras
@@ -186,13 +189,15 @@ public class Settings extends JFrame {
         // Obtener ssid y contraseña
         String ssidText = config.getSsid();
         String passwordText = config.getPassword();
-        String ipRedText = config.getIp();
+        String ipRedText = config.getGateway();
         String broadcastText = config.getBroadcast();
+        String maskText = config.getMask();
 
         password.setText(passwordText);
         ssid.setText(ssidText);
-        ipRed.setText(ipRedText);
+        gateway.setText(ipRedText);
         broadcast.setText(broadcastText);
+        mask.setText(maskText);
     }
 
     public void obtenerFresadoras(Conexion conexion) throws SQLException {

@@ -1,5 +1,7 @@
 package Main;
 
+import Network.NetworkInfo;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,8 +14,9 @@ public class Config {
     public int delay;
     public String ssid;
     public String password;
-    public String ip;
+    public String gateway;
     public String broadcast;
+    public String mask;
 
     private Properties props = new Properties();
 
@@ -25,13 +28,21 @@ public class Config {
             e.printStackTrace();
         }
 
+        // TODO actualizar datos de red en config.porperties con NetworkInfo
+        NetworkInfo networkInfo = new NetworkInfo();
+
+        setGateway(networkInfo.updateGateway());
+        setBroadcast(networkInfo.updateBroadcast());
+        setMask(networkInfo.updateSubnetMask());
+
         // Obtener el valor de
         interval = Integer.parseInt(props.getProperty("interval"));
         delay = Integer.parseInt(props.getProperty("delay"));
         ssid = props.getProperty("SSID");
         password = props.getProperty("password");
-        ip = props.getProperty("ipRed");
+        gateway = props.getProperty("gateway");
         broadcast = props.getProperty("broadcast");
+        mask = props.getProperty("mask");
     }
 
     public void setSsid(String ssid) {
@@ -44,14 +55,19 @@ public class Config {
         props.setProperty("password", password);
     }
 
-    public void setIp(String ip) {
-        this.ip = ip;
-        props.setProperty("ipRed", ip);
+    public void setGateway(String gateway) {
+        this.gateway = gateway;
+        props.setProperty("gateway", gateway);
     }
 
     public void setBroadcast(String broadcast) {
         this.broadcast = broadcast;
         props.setProperty("broadcast", broadcast);
+    }
+
+    public void setMask(String mask) {
+        this.mask = mask;
+        props.setProperty("mask", mask);
     }
 
     public int getInterval() {
@@ -70,11 +86,15 @@ public class Config {
         return password;
     }
 
-    public String getIp() {
-        return ip;
+    public String getGateway() {
+        return gateway;
     }
 
     public String getBroadcast() {
         return broadcast;
+    }
+
+    public String getMask() {
+        return mask;
     }
 }
