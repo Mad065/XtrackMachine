@@ -15,7 +15,7 @@ public class Config {
     public String ip;
     public String broadcast;
 
-    Properties props = new Properties();
+    private Properties props = new Properties();
 
     public Config() {
         // Leer el archivo de configuración
@@ -42,5 +42,39 @@ public class Config {
     public void setPassword(String password) {
         this.password = password;
         props.setProperty("password", password);
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
+        props.setProperty("ipRed", ip);
+    }
+
+    public void setBroadcast(String broadcast) {
+        this.broadcast = broadcast;
+        props.setProperty("broadcast", broadcast);
+    }
+
+    public int getInterval() {
+        return interval;
+    }
+
+    public int getDelay() {
+        return delay;
+    }
+
+    public String getSsid() {
+        return ssid;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public String getBroadcast() {
+        return broadcast;
     }
 }

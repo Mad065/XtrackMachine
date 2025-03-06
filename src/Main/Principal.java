@@ -35,8 +35,8 @@ public class Principal extends JPanel {
         // Actializar cada 3 segundos
         scheduler.scheduleAtFixedRate(
                 () -> actualizar(conexion, communication),
-                config.delay, // Retraso inicial
-                config.interval, // Intervalo
+                config.getDelay(), // Retraso inicial
+                config.getInterval(), // Intervalo
                 TimeUnit.SECONDS // Unidad de tiempo
         );
 

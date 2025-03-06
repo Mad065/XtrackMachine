@@ -36,7 +36,7 @@ public class Search extends JFrame {
     }
 
     public void llenarTabla(Communication communication, Config config) throws IOException {
-        List<String> machines = communication.obtenerIPs(config.broadcast);
+        List<String> machines = communication.obtenerIPs(config.getBroadcast());
         String[][] datos = new String[machines.size()][2];
 
         for (int i = 0; i < machines.size(); i++) {
