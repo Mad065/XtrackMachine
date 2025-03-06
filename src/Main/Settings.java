@@ -132,14 +132,14 @@ public class Settings extends JFrame {
         update.addActionListener(e -> {
             String ssidText = ssid.getText();
             String passwordText = Arrays.toString(password.getPassword());
-            String ipRedText = gateway.getText();
+            String gatewayText = gateway.getText();
             String broadcastText = broadcast.getText();
             String maskText = mask.getText();
 
             // Actualizar en config
             config.setSsid(ssidText);
             config.setPassword(passwordText);
-            config.setGateway(ipRedText);
+            config.setGateway(gatewayText);
             config.setBroadcast(broadcastText);
             config.setMask(maskText);
         });
@@ -189,13 +189,13 @@ public class Settings extends JFrame {
         // Obtener ssid y contraseña
         String ssidText = config.getSsid();
         String passwordText = config.getPassword();
-        String ipRedText = config.getGateway();
+        String gatewayText = config.getGateway();
         String broadcastText = config.getBroadcast();
         String maskText = config.getMask();
 
         password.setText(passwordText);
         ssid.setText(ssidText);
-        gateway.setText(ipRedText);
+        gateway.setText(gatewayText);
         broadcast.setText(broadcastText);
         mask.setText(maskText);
     }
