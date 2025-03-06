@@ -1,6 +1,6 @@
 package Main;
 
-import Communication.Communication;
+import Network.Communication;
 import SQL.Conexion;
 import com.formdev.flatlaf.FlatDarkLaf;
 import javax.swing.*;

@@ -1,4 +1,4 @@
-package Communication;
+package Network;
 
 import SQL.Conexion;
 import java.io.BufferedReader;

@@ -1,16 +1,14 @@
 package Main;
 
-import Communication.Communication;
+import Network.Communication;
 import SQL.Conexion;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.HierarchyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
-import java.io.Serial;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.concurrent.Executors;

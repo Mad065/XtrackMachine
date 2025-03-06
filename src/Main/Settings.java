@@ -1,6 +1,6 @@
 package Main;
 
-import Communication.Communication;
+import Network.Communication;
 import SQL.Conexion;
 
 import javax.swing.*;
@@ -25,6 +25,8 @@ public class Settings extends JFrame {
     private JTextField nameField;
     private JTextField nameMachineField;
     private JButton updateESP;
+    private JTextField ipRed;
+    private JTextField broadcast;
 
     public boolean actualizarUsuario = false;
     public boolean actualizarMachine = false;
@@ -129,10 +131,14 @@ public class Settings extends JFrame {
         update.addActionListener(e -> {
             String ssidText = ssid.getText();
             String passwordText = Arrays.toString(password.getPassword());
+            String ipRedText = ipRed.getText();
+            String broadcastText = broadcast.getText();
 
             // Actualizar en config
             config.setSsid(ssidText);
             config.setPassword(passwordText);
+            config.setIp(ipRedText);
+            config.setBroadcast(broadcastText);
         });
 
         // Boton para actualizar las credenciales de red en ESPs de aspiradoras
@@ -178,11 +184,15 @@ public class Settings extends JFrame {
 
     public void obtenerRed(Config config) {
         // Obtener ssid y contraseña
-        String ssidText = config.ssid;
-        String passwordText = config.password;
+        String ssidText = config.getSsid();
+        String passwordText = config.getPassword();
+        String ipRedText = config.getIp();
+        String broadcastText = config.getBroadcast();
 
         password.setText(passwordText);
         ssid.setText(ssidText);
+        ipRed.setText(ipRedText);
+        broadcast.setText(broadcastText);
     }
 
     public void obtenerFresadoras(Conexion conexion) throws SQLException {

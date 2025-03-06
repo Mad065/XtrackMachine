@@ -1,6 +1,6 @@
 package Main;
 
-import Communication.Communication;
+import Network.Communication;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
