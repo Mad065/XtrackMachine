@@ -2,9 +2,7 @@ package Main;
 
 import Network.NetworkInfo;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Properties;
 
 public class Config {
@@ -28,13 +26,6 @@ public class Config {
             e.printStackTrace();
         }
 
-        // TODO actualizar datos de red en config.porperties con NetworkInfo
-        NetworkInfo networkInfo = new NetworkInfo();
-
-        setGateway(networkInfo.updateGateway());
-        setBroadcast(networkInfo.updateBroadcast());
-        setMask(networkInfo.updateSubnetMask());
-
         // Obtener el valor de
         interval = Integer.parseInt(props.getProperty("interval"));
         delay = Integer.parseInt(props.getProperty("delay"));
@@ -43,32 +34,64 @@ public class Config {
         gateway = props.getProperty("gateway");
         broadcast = props.getProperty("broadcast");
         mask = props.getProperty("mask");
+
+        NetworkInfo networkInfo = new NetworkInfo();
+
+        if (gateway == null || gateway.trim().isEmpty()) {
+            setGateway(networkInfo.updateGateway());
+        }
+
+        if (broadcast == null || broadcast.trim().isEmpty()) {
+            setBroadcast(networkInfo.updateBroadcast());
+        }
+
+        if (mask == null || mask.trim().isEmpty()) {
+            setMask(networkInfo.updateSubnetMask());
+        }
     }
+
+    // Guardar cambios en el archivo
+    private void saveConfig() {
+        try (OutputStream output = new FileOutputStream(CONFIG_FILE)) {
+            props.store(output, "Archivo de Configuración Actualizado");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Setters
 
     public void setSsid(String ssid) {
         this.ssid = ssid;
         props.setProperty("SSID", ssid);
+        saveConfig();
     }
 
     public void setPassword(String password) {
         this.password = password;
         props.setProperty("password", password);
+        saveConfig();
     }
 
     public void setGateway(String gateway) {
         this.gateway = gateway;
         props.setProperty("gateway", gateway);
+        saveConfig();
     }
 
     public void setBroadcast(String broadcast) {
         this.broadcast = broadcast;
         props.setProperty("broadcast", broadcast);
+        saveConfig();
     }
 
     public void setMask(String mask) {
         this.mask = mask;
         props.setProperty("mask", mask);
+        saveConfig();
     }
+
+    // Getters
 
     public int getInterval() {
         return interval;
