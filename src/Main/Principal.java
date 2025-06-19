@@ -154,7 +154,7 @@ public class Principal extends JPanel {
         settings.addActionListener(e -> {
             Settings settings = null;
             try {
-                settings = new Settings(conexion, communication,config);
+                settings = new Settings(conexion, communication, config);
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
