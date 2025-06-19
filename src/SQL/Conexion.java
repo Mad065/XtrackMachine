@@ -29,7 +29,7 @@ public class Conexion {
     }
 
     public boolean verificarUsuario(String usuario, String contrasena) throws SQLException {
-        String query = "SELECT * FROM Usuario WHERE nombre = ? AND contraseña = ?";
+        String query = "SELECT * FROM Usuario WHERE nombre = ? AND contrasena = ?";
         PreparedStatement ps = connection.prepareStatement(query);
         ps.setString(1, usuario);
         ps.setString(2, contrasena);
@@ -166,7 +166,7 @@ public class Conexion {
     public String[][] obtenerUsuarios() throws SQLException {
 
         // Consulta SQL
-        String query = "SELECT nombre, contraseña FROM Usuario";
+        String query = "SELECT nombre, contrasena FROM Usuario";
 
         Statement stmt = connection.createStatement(
                 ResultSet.TYPE_SCROLL_INSENSITIVE,
@@ -189,8 +189,8 @@ public class Conexion {
 
         int i = 0;
         while (rs.next()) {
-            datos[i][0] = String.valueOf(rs.getInt("nombre"));
-            datos[i][1] = rs.getString("contraseña");
+            datos[i][0] = String.valueOf(rs.getString("nombre"));
+            datos[i][1] = rs.getString("contrasena");
             datos[i][2] = "Editar";
             datos[i][3] = "Eliminar";
             i++;
@@ -327,7 +327,7 @@ public class Conexion {
     }
 
     public void registrarUsuario(String name, String password) throws SQLException {
-        String query = "INSERT INTO Usuario (nombre, contraseña, tipo) VALUE (?, ?, 1);";
+        String query = "INSERT INTO Usuario (nombre, contrasena, tipo) VALUE (?, ?, 1);";
         PreparedStatement ps = connection.prepareStatement(query);
         ps.setString(1, name);
         ps.setString(2, password);
@@ -342,7 +342,7 @@ public class Conexion {
     }
 
     public void actualizarUsuario(String name, String newPassword, String newName) throws SQLException {
-        String query = "UPDATE Usuario SET nombre = ?, contraseña = ?, tipo = 1 WHERE nombre = ?;";
+        String query = "UPDATE Usuario SET nombre = ?, contrasena = ?, tipo = 1 WHERE nombre = ?;";
         PreparedStatement ps = connection.prepareStatement(query);
         ps.setString(1, newName);
         ps.setString(2, newPassword);
