@@ -1,0 +1,40 @@
+4eeb75c - Mad0 - 2025-03-06 - finish TODO
+ab90a2f - Mad0 - 2025-03-06 - correct config
+aadfab9 - Mad0 - 2025-03-06 - correct variable names
+0aef8f8 - Mad0 - 2025-03-06 - configure gateway, broadcast, mask
+ad32867 - Mad0 - 2025-03-06 - add NetworkInfo and modify Settings
+840a26e - Mad0 - 2025-03-06 - getters en config
+e8bca1c - Mad0 - 2025-03-04 - implementar busqueda en ventana de editar
+b587a7e - Mad0 - 2025-03-04 - Add Search
+afd1c9c - Mad0 - 2025-03-04 - Cambiar nombre proyecto
+f68cb03 - Mad0 - 2025-02-27 - separar boton de actualizar red
+6669f73 - Mad0 - 2025-02-25 - Chamge Database
+0ac4b21 - Mad0 - 2025-02-25 - add XtrackMachine.sql
+0b24ffc - Mad0 - 2025-02-25 - corregir uso de Maquinas y Estados
+4c2cf17 - Mad0 - 2025-02-25 - add sets en Config
+6852fa8 - Mad0 - 2025-02-25 - eliminar funcion innecesaria
+6ea78a6 - Mad0 - 2025-02-25 - Actualizar red y maquinas
+837e9ba - Mad0 - 2025-02-23 - añadir actualizarUsuario()
+829cbdc - Mad0 - 2025-02-23 - volver a actualizar constantemente
+2d6896e - Mad0 - 2025-02-23 - ahorrar memoria y mejorar Configuracion
+39c1dd6 - Mad0 - 2025-02-23 - funciones sql usuarios y maquinas
+1799840 - Mad0 - 2025-02-23 - corregir ruta de config.properties
+a731b0f - Mad0 - 2025-02-23 - verificar panel activo
+c0e2037 - Mad0 - 2025-02-20 - notas y modificaciones Sttings
+c08d51d - Mad0 - 2025-02-20 - llenado de datos Settings
+138bf17 - Mad0 - 2025-02-20 - add ssid and password to config
+3e0f776 - Mad0 - 2025-02-20 - create configuration layout
+7f36463 - Mad0 - 2025-02-20 - Correccion imports
+e4795b8 - Mad0 - 2025-02-20 - add actualizarRed()
+aebb622 - Mad0 - 2025-02-18 - add Config (interval, delay)
+1cd9fd1 - Mad0 - 2025-02-18 - TIMEOUT implementado
+5634dca - Mad0 - 2025-02-18 - uso de actualizarAspiradora en actualizarEstado
+4c9b6dd - Mad0 - 2025-02-18 - add metodo eliminarAspiradora()
+a0915b1 - Mad0 - 2025-02-18 - Add Settings
+fb0c2a7 - Mad0 - 2025-02-13 - Modificar vista de tablas
+126fec2 - Mad0 - 2025-02-13 - interfaz de aspiradoras
+9653981 - Mad0 - 2025-02-12 - Modulo Edit terminadoy Communication avanzado
+c9271db - Mad0 - 2025-02-10 - Add Edit
+f032911 - Mad0 - 2024-12-31 - CRUD terminado
+b14ea7e - Mad0 - 2024-12-31 - CRUD
+b2d3524 - Mad0 - 2024-12-30 - Start
