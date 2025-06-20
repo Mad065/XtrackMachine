@@ -4,18 +4,7 @@
       <root url="file://$USER_HOME$/Documents/Programacion/Recursos/MySQL Connector/mysql-connector-j-9.1.0" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES>
-      <root url="file://$PROJECT_DIR$/lib/java" />
-      <root url="file://$PROJECT_DIR$/lib/java1" />
-      <root url="file://$PROJECT_DIR$/lib/java2" />
-      <root url="file://$PROJECT_DIR$/lib/java3" />
-      <root url="file://$PROJECT_DIR$/lib/java4" />
-      <root url="file://$PROJECT_DIR$/lib/java5" />
-      <root url="file://$PROJECT_DIR$/lib/java6" />
-      <root url="file://$PROJECT_DIR$/lib/java7" />
-      <root url="file://$PROJECT_DIR$/lib/java8" />
-      <root url="file://$PROJECT_DIR$/lib/java9" />
-    </SOURCES>
+    <SOURCES />
     <jarDirectory url="file://$USER_HOME$/Documents/Programacion/Recursos/MySQL Connector/mysql-connector-j-9.1.0" recursive="false" />
   </library>
 </component>
