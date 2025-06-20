@@ -7,7 +7,7 @@ public class Conexion {
     Connection connection;
     String url = "jdbc:mysql://127.0.0.1:3306/XtrackMachine";
     String user = "root";
-    String password = "Joseantonio+0";
+    String password = "3110";
 
     public Conexion () {
 
