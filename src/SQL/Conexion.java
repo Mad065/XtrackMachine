@@ -7,7 +7,7 @@ public class Conexion {
     Connection connection;
     String url = "jdbc:mysql://127.0.0.1:3306/XtrackMachine";
     String user = "root";
-    String password = "3110";
+    String password = "Joseantonio+0";
 
     public Conexion () {
 
@@ -273,7 +273,12 @@ public class Conexion {
         PreparedStatement ps = connection.prepareStatement(query);
         ps.setString(1, nameMaquina);
         ResultSet rs = ps.executeQuery();
-        return rs.getInt("id");
+
+        if (rs.next()) {
+            return rs.getInt("id");
+        } else {
+            throw new SQLException("No se encontró ninguna máquina con el nombre: " + nameMaquina);
+        }
     }
 
     public String[] obtenerEstados() throws SQLException {
@@ -309,11 +314,16 @@ public class Conexion {
     }
 
     public int obtenerIdEstado(String nameEstado) throws SQLException {
-        String query = "SELECT id FROM Maquina WHERE nombre = ?;";
+        String query = "SELECT id FROM Estado WHERE nombre = ?;";
         PreparedStatement ps = connection.prepareStatement(query);
         ps.setString(1, nameEstado);
         ResultSet rs = ps.executeQuery();
-        return rs.getInt("id");
+
+        if (rs.next()) {
+            return rs.getInt("id");
+        } else {
+            throw new SQLException("No se encontró ningún estado con el nombre: " + nameEstado);
+        }
     }
 
     public void registrarAspiradora(int id, String ip, int maquina, int estado) throws SQLException {
