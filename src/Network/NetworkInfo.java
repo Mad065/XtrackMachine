@@ -19,17 +19,11 @@ public class NetworkInfo {
         try {
             String os = System.getProperty("os.name").toLowerCase();
             if (os.contains("win")) {
-                gateway = getGatewayWindows();
-                broadcast = getBroadcastWindows();
-                subnetMask = convertToDecimal(getSubnetMaskWindows());
+
             } else if (os.contains("mac")) {
-                gateway = getGatewayMac();
-                broadcast = getBroadcastMac();
-                subnetMask = convertHexToDecimal(getSubnetMaskMac());
+
             } else if (os.contains("nix") || os.contains("nux") || os.contains("linux")) {
-                gateway = getGatewayLinux();
-                broadcast = getBroadcastLinux();
-                subnetMask = convertCidrToDecimal(getSubnetMaskLinux());
+                
             } else {
                 gateway = broadcast = subnetMask = "No disponible";
             }
