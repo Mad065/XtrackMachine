@@ -5,9 +5,9 @@ import java.sql.*;
 public class Conexion {
 
     Connection connection;
-    String url = "jdbc:mysql://127.0.0.1:3306/XtrackMachine";
+    String url = "jdbc:mysql://127.0.0.1:3306/xtrackmachine";
     String user = "root";
-    String password = "Joseantonio+0";
+    String password = "edsla266";
 
     public Conexion () {
 
@@ -73,10 +73,7 @@ public class Conexion {
             datos[i][1] = rs.getString("ip");
             datos[i][2] = rs.getString("maquina");
             datos[i][3] = rs.getString("estado");
-            datos[i][4] = rs.getBoolean("encendido") ? "Encendido" : "Apagado";
-            datos[i][5] = "Detener";
-            datos[i][6] = "Reiniciar";
-            datos[i][7] = "Iniciar";
+            datos[i][4] = "Iniciar";
             i++;
         }
 
