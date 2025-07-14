@@ -23,7 +23,7 @@ public class NetworkInfo {
             } else if (os.contains("mac")) {
 
             } else if (os.contains("nix") || os.contains("nux") || os.contains("linux")) {
-                
+
             } else {
                 gateway = broadcast = subnetMask = "No disponible";
             }
