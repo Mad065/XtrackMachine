@@ -1,114 +1,99 @@
-# XtrackMachine – Sistema de Control de Aspiradoras para Fresadoras
+# ⚙️ XtrackMachine – Sistema Central
 
-## Introducción
+> **Sistema Centralizado de Control para Aspiradoras Autónomas en Fresadoras**
 
-**XtrackMachine** es un sistema diseñado para la **gestión y control de aspiradoras autónomas** utilizadas en fresadoras.  
-Su objetivo principal es **facilitar la administración eficiente de estos dispositivos** mediante una interfaz que permite realizar operaciones CRUD (crear, leer, actualizar, eliminar) sobre usuarios y aspiradoras.
+![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white)
+![TCP/IP](https://img.shields.io/badge/Network-TCP%2FIP-blue?style=for-the-badge)
+![FlatLaf](https://img.shields.io/badge/UI-FlatLaf-lightgray?style=for-the-badge)
 
-El sistema está desarrollado en **Java** con **MySQL** como base de datos y se comunica con las aspiradoras a través de **sockets TCP/IP**, permitiendo **monitoreo en tiempo real** y control seguro de los dispositivos.
+## 🔗 Ecosistema del Proyecto
 
----
-
-## Requisitos del Sistema
-
-### 1. Requisitos Funcionales
-
-#### 1.1 Gestión de usuarios
-- Crear nuevos usuarios con nombre de usuario y contraseña.
-- Consultar lista de usuarios registrados.
-- Modificar información de usuarios existentes.
-- Eliminar usuarios de manera segura con confirmación.
-- Validar credenciales al iniciar sesión.
-- Controlar intentos de acceso fallidos con mensajes de error.
-
-#### 1.2 Gestión de aspiradoras
-- Registrar nuevas aspiradoras: IP, ID, estado y máquina asignada.
-- Asociar aspiradoras a máquinas fresadoras.
-- Consultar información de todas las aspiradoras con indicadores visuales.
-- Modificar datos de aspiradoras (estado, IP, máquina).
-- Eliminar aspiradoras.
-- Mostrar el estado según valores: Sucio, Limpio, Limpiando, En uso, Error, Error de conexión, Desconocido.
+Este repositorio contiene el **Software de Control Central** (Desktop App). Para acceder al código fuente que se ejecuta en los microcontroladores de las aspiradoras, visita el repositorio del hardware:
+👉 **[XtrackMachine-ESP32 (Firmware)](https://github.com/Mad065/XtrackMachine-ESP32)**
 
 ---
 
-### 2. Requisitos de la Base de Datos
+## 📖 Descripción General
 
-#### 2.1 Estructura
-- Motor: **MySQL**
-- Tablas principales:
-  - `Usuario (id, nombre, contraseña, tipo_id)`
-  - `Tipo (id, nombre)`
-  - `Aspiradora (id, ip, maquina_id, encendido, estado_id)`
-  - `Estado (id, nombre)`
-  - `Maquina (id, nombre)`
+**XtrackMachine** es una solución de software basada en principios de programación orientada a objetos, diseñada para la **gestión y control en tiempo real de aspiradoras autónomas** utilizadas en entornos de fresado. 
 
-#### 2.2 Integridad
-- Claves primarias bien definidas.
-- Claves foráneas entre tablas (`Usuario` → `Tipo`, `Aspiradora` → `Estado` y `Maquina`).
-- Base de datos normalizada para evitar redundancia y mejorar consistencia.
+El sistema optimiza la administración de estos dispositivos a través de una interfaz gráfica moderna, permitiendo realizar operaciones CRUD completas sobre usuarios y equipos. Su núcleo de red, basado en **sockets TCP/IP**, garantiza una comunicación bidireccional estable, segura y de baja latencia con el hardware (ESP32).
 
 ---
 
-### 3. Requisitos de Comunicación con Dispositivos
-
-#### 3.1 Comunicación bidireccional
-- Conexión TCP/IP con cada aspiradora mediante su IP.
-- Envío de comandos para cambiar estado o iniciar funciones.
-- Recepción de datos actualizados de cada aspiradora.
-
-#### 3.2 Gestión de errores
-- Actualizar estado a “Error de conexión” si no hay respuesta.
-- Mostrar notificaciones visuales ante errores de conexión o comandos inválidos.
+## 📑 Tabla de Contenidos
+1. [Características Principales](#-características-principales)
+2. [Arquitectura del Sistema](#-arquitectura-del-sistema)
+3. [Especificaciones Técnicas](#-especificaciones-técnicas-requisitos-no-funcionales)
+4. [Estructura de Base de Datos](#-estructura-de-base-de-datos)
+5. [Stack Tecnológico y Herramientas](#-stack-tecnológico-y-herramientas)
 
 ---
 
-### 4. Requisitos de Interfaz Gráfica
+## 🚀 Características Principales
 
-- Intuitiva, fácil de navegar y adaptada a distintos tamaños de pantalla.
-- Paneles para gestión de usuarios y aspiradoras con funcionalidades completas de CRUD.
-- Mostrar estado de aspiradoras con colores, íconos o etiquetas.
-- Uso de **Java Swing** + **FlatLaf** para un diseño moderno.
-- Retroalimentación clara: mensajes de éxito, advertencia o error.
+### 👥 Gestión de Control de Acceso (Usuarios)
+* **Autenticación Segura:** Validación robusta de credenciales y prevención de accesos no autorizados con retroalimentación de errores.
+* **Administración CRUD:** Creación, lectura, actualización y eliminación (con confirmación de seguridad) de perfiles de usuario.
+* **Control de Privilegios:** Diferenciación de accesos según el tipo de usuario.
 
----
+### 🤖 Gestión de Hardware (Aspiradoras)
+* **Registro y Asignación:** Alta de dispositivos mediante IP e ID, y vinculación directa a máquinas fresadoras específicas.
+* **Telemetría en Tiempo Real:** Monitorización de estados operativos (*Sucio, Limpio, Limpiando, En uso, Error, Error de conexión, Desconocido*).
+* **Administración CRUD:** Modificación dinámica de parámetros de red (IP), estado y asignación de maquinaria.
 
-### 5. Requisitos No Funcionales
-
-- **Rendimiento:** Operaciones CRUD < 3 segundos, múltiples conexiones simultáneas.
-- **Seguridad:** Acceso restringido a usuarios con privilegios; validación de entradas.
-- **Escalabilidad:** Posibilidad de agregar nuevos tipos de máquinas o usuarios.
-- **Mantenibilidad:** Código modular, documentado y estructurado por responsabilidad.
-
----
-
-## Herramientas Utilizadas
-
-- **IntelliJ IDEA Ultimate** – Desarrollo Java y conexión con MySQL.
-- **Navicat Premium** – Administración y diseño de base de datos MySQL.
-- **Visual Studio Code** – Desarrollo de software para ESP32.
-- **Tower Git / GitHub** – Control de versiones y repositorio remoto.
-- **FlatLaf** – Librería para interfaces gráficas modernas en Swing.
-- **MySQL Server** – Base de datos relacional.
-- **Socket / ServerSocket (Java.net)** – Comunicación TCP/IP con aspiradoras.
-- **macOS** – Plataforma de desarrollo.
+### 📡 Comunicación Bidireccional (TCP/IP)
+* **Control Remoto:** Envío de comandos de ejecución y cambio de estado directamente al hardware.
+* **Manejo de Excepciones de Red:** Detección automática de pérdida de paquetes y actualización de estado a *"Error de conexión"* ante timeouts.
 
 ---
 
-## Arquitectura del Programa
+## 🏗 Arquitectura del Sistema
 
-**Modelo MVC** (Modelo-Vista-Controlador)  
+El proyecto está estructurado bajo el patrón de diseño **MVC (Modelo-Vista-Controlador)**, garantizando código modular, mantenible y con separación de responsabilidades:
 
-### 1. Modelo
-- Clases de conexión y operaciones sobre base de datos (`SQL/`).
-- Gestión de usuarios, aspiradoras y estados.
-- Lógica de negocio y CRUD.
+* **📦 Modelo (`SQL/`, Entidades):** Gestiona la lógica de negocio, las conexiones a la base de datos MySQL y las operaciones CRUD de usuarios, aspiradoras y estados.
+* **🖥 Vista (`UI/`):** Desarrollada en **Java Swing** con el Look and Feel de **FlatLaf**. Incluye paneles responsivos (Login, Principal, Gestión, Búsqueda, Configuración).
+* **⚙️ Controlador (`MainFrame`, `XtrackMachine`):** Intermediario que procesa los eventos de la interfaz, orquesta la comunicación con las aspiradoras mediante Sockets y actualiza la base de datos y la UI.
 
-### 2. Vista
-- Interfaz gráfica en **Java Swing** + **FlatLaf**.
-- Paneles: Inicio de sesión, Principal, Manage, Register, Edit, Search, Settings.
-- Visualización de estados y acciones de las aspiradoras.
+---
 
-### 3. Controlador
-- Clases: `XtrackMachine`, `MainFrame`, `Principal`, `Manage`, `Settings`.
-- Gestionan flujo de información entre modelo y vista.
-- Procesan acciones del usuario y actualizan datos y UI.
+## 📊 Especificaciones Técnicas (Requisitos No Funcionales)
+
+| Categoría | Especificación |
+| :--- | :--- |
+| **Rendimiento** | Operaciones CRUD en < 3 segundos. Soporte para múltiples conexiones TCP/IP concurrentes. |
+| **Seguridad** | Accesos restringidos por jerarquía y sanitización de entradas en la interfaz. |
+| **Escalabilidad** | Base de datos normalizada para fácil integración de nuevas máquinas o estados. |
+| **UX/UI** | Interfaz intuitiva con retroalimentación explícita (éxito, advertencia, error). |
+
+---
+
+## 🗄 Estructura de Base de Datos
+
+Motor relacional: **MySQL**
+
+* **`Usuario`** `(id [PK], nombre, contraseña, tipo_id [FK])`
+* **`Tipo`** `(id [PK], nombre)`
+* **`Aspiradora`** `(id [PK], ip, maquina_id [FK], encendido, estado_id [FK])`
+* **`Estado`** `(id [PK], nombre)`
+* **`Maquina`** `(id [PK], nombre)`
+
+---
+
+## 🛠 Stack Tecnológico y Herramientas
+
+* **Lenguaje Core:** Java
+* **IDE / Entorno:** IntelliJ IDEA Ultimate (macOS)
+* **Framework UI:** Java Swing + [FlatLaf](https://www.formdev.com/flatlaf/)
+* **Base de Datos:** MySQL Server (Administrado con Navicat Premium)
+* **Protocolo de Red:** `java.net.Socket` / `ServerSocket` (TCP/IP)
+
+---
+
+## 📄 Licencia
+
+Este proyecto está bajo la Licencia **MIT**. Consulta el archivo [`LICENSE`](LICENSE) para obtener más detalles.
+
+> **Aviso de responsabilidad:** El software y firmware se proporcionan "tal cual", sin garantías sobre su desempeño directo con maquinaria física o fresadoras en entornos de producción.
