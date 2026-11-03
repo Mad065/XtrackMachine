@@ -11,9 +11,8 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.List;
+import java.util.concurrent.*;
 
 public class Principal extends JPanel {
     private JButton start;
@@ -23,17 +22,23 @@ public class Principal extends JPanel {
     private JButton update;
     private JButton settings;
 
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(r -> {
+        Thread t = new Thread(r, "Principal-Scheduler");
+        t.setDaemon(true);
+        return t;
+    });
+
+    private final ExecutorService networkExecutor = Executors.newVirtualThreadPerTaskExecutor();
+
     public Principal(CardLayout cardLayout, JPanel cardPanel, Conexion conexion, Communication communication, Config config) throws SQLException {
         llenarTabla(conexion);
 
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-
-        // Actializar cada 3 segundos
-        scheduler.scheduleAtFixedRate(
+        // Actualizar periódicamente con delay fijo para evitar solapamientos
+        scheduler.scheduleWithFixedDelay(
                 () -> actualizar(conexion, communication),
                 config.getDelay(), // Retraso inicial
-                config.getInterval(), // Intervalo
-                TimeUnit.SECONDS // Unidad de tiempo
+                Math.max(config.getInterval(), 1), // Intervalo mínimo de 1 seg
+                TimeUnit.SECONDS
         );
 
         table.addMouseListener(new MouseAdapter() {
@@ -46,70 +51,103 @@ public class Principal extends JPanel {
                     Object cellValue = table.getValueAt(row, col);
                     String ipAspiradora = (String) table.getValueAt(row, 1);
 
-                    if (cellValue.equals("Iniciar")) {
-                        // Iniciar aspiradora
-                        try {
-                            if (!communication.iniciarAspiradora(ipAspiradora)) {
-                                JOptionPane.showMessageDialog(null, "Error al iniciar aspiradora " + ipAspiradora, "Error", JOptionPane.ERROR_MESSAGE);
+                    if ("Iniciar".equals(cellValue)) {
+                        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                        networkExecutor.submit(() -> {
+                            try {
+                                if (!communication.iniciarAspiradora(ipAspiradora)) {
+                                    SwingUtilities.invokeLater(() ->
+                                        JOptionPane.showMessageDialog(Principal.this, "Error al iniciar aspiradora " + ipAspiradora, "Error", JOptionPane.ERROR_MESSAGE)
+                                    );
+                                } else {
+                                    actualizar(conexion, communication);
+                                }
+                            } catch (IOException ex) {
+                                SwingUtilities.invokeLater(() ->
+                                    JOptionPane.showMessageDialog(Principal.this, "Fallo de comunicación con " + ipAspiradora + ": " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE)
+                                );
+                            } finally {
+                                SwingUtilities.invokeLater(() -> setCursor(Cursor.getDefaultCursor()));
                             }
-                        } catch (IOException ex) {
-                            throw new RuntimeException(ex);
-                        }
+                        });
                     }
                 }
             }
         });
 
-        // TODO en ves de recorrer todas las ip se puede por broadcast, revisar que es mas conveniente
-
-        update.addActionListener( e -> {
-            actualizar(conexion, communication);
+        update.addActionListener(e -> {
+            update.setEnabled(false);
+            networkExecutor.submit(() -> {
+                try {
+                    actualizar(conexion, communication);
+                } finally {
+                    SwingUtilities.invokeLater(() -> update.setEnabled(true));
+                }
+            });
         });
 
         start.addActionListener(e -> {
-            // Iniciar todas las aspiradoras
-            try {
-                String[] ips = conexion.obtenerIPs();
-                Arrays.stream(ips).forEach(ip ->
-                {
-                    try {
-                        if (!communication.iniciarAspiradora(ip)) {
-                            JOptionPane.showMessageDialog(null, "Error al iniciar aspiradora " + ip, "Error", JOptionPane.ERROR_MESSAGE);
-                        }
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                });
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
-        });
+            start.setEnabled(false);
+            setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+            networkExecutor.submit(() -> {
+                try {
+                    String[] ips = conexion.obtenerIPs();
+                    List<CompletableFuture<Void>> startFutures = Arrays.stream(ips)
+                            .map(ip -> CompletableFuture.runAsync(() -> {
+                                try {
+                                    if (!communication.iniciarAspiradora(ip)) {
+                                        System.err.println("No se pudo iniciar aspiradora: " + ip);
+                                    }
+                                } catch (IOException ex) {
+                                    System.err.println("Error comunicando con " + ip + ": " + ex.getMessage());
+                                }
+                            }, networkExecutor))
+                            .toList();
 
+                    CompletableFuture.allOf(startFutures.toArray(new CompletableFuture[0])).join();
+                    actualizar(conexion, communication);
+                } catch (SQLException ex) {
+                    SwingUtilities.invokeLater(() ->
+                        JOptionPane.showMessageDialog(Principal.this, "Error al consultar aspiradoras: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE)
+                    );
+                } finally {
+                    SwingUtilities.invokeLater(() -> {
+                        start.setEnabled(true);
+                        setCursor(Cursor.getDefaultCursor());
+                    });
+                }
+            });
+        });
 
         manage.addActionListener(e -> {
             cardLayout.show(cardPanel, "Manage");
         });
 
         settings.addActionListener(e -> {
-            Settings settings = null;
             try {
-                settings = new Settings(conexion, communication, config);
+                Settings settingsWindow = new Settings(conexion, communication, config);
+                settingsWindow.setSize(600, 400);
+                settingsWindow.setContentPane(settingsWindow.panel);
+                settingsWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                settingsWindow.setLocationRelativeTo(null);
+                settingsWindow.setVisible(true);
             } catch (SQLException ex) {
-                throw new RuntimeException(ex);
+                JOptionPane.showMessageDialog(Principal.this, "Error al abrir ajustes: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
-            settings.setSize(600, 400);
-            settings.setContentPane(settings.panel);
-            settings.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            settings.setLocationRelativeTo(null);
-            settings.setVisible(true);
         });
     }
 
     public void llenarTabla(Conexion conexion) throws SQLException {
         conexion.conectar();
-
         String[][] datos = conexion.obtenerAspiradoras();
+        if (SwingUtilities.isEventDispatchThread()) {
+            renderTabla(datos);
+        } else {
+            SwingUtilities.invokeLater(() -> renderTabla(datos));
+        }
+    }
 
+    private void renderTabla(String[][] datos) {
         String[] columnas = {"ID", "IP", "Máquina", "Estado", "Iniciar"};
         DefaultTableModel modelo = new DefaultTableModel(datos, columnas) {
             @Override
@@ -131,30 +169,24 @@ public class Principal extends JPanel {
         }
     }
 
-    public void actualizar(Conexion conexion,Communication communication) {
-        // Actualizar estados de todas las aspiradoras
-        System.out.println("Actualizando Principal");
+    public void actualizar(Conexion conexion, Communication communication) {
+        System.out.println("Actualizando Principal en paralelo...");
         try {
             String[] ips = conexion.obtenerIPs();
-            Arrays.stream(ips).forEach(ip ->
-            {
-                try {
-                    communication.actualizarEstado(ip, conexion);
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-        } catch (SQLException ex) {
-            throw new RuntimeException(ex);
-        }
+            List<CompletableFuture<Void>> futures = Arrays.stream(ips)
+                    .map(ip -> CompletableFuture.runAsync(() -> {
+                        try {
+                            communication.actualizarEstado(ip, conexion);
+                        } catch (Exception ex) {
+                            System.err.println("Fallo al actualizar estado de " + ip + ": " + ex.getMessage());
+                        }
+                    }, networkExecutor))
+                    .toList();
 
-        // Llenar tabla
-        try {
+            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
             llenarTabla(conexion);
         } catch (SQLException ex) {
-            throw new RuntimeException(ex);
+            System.err.println("Error de base de datos durante actualización de Principal: " + ex.getMessage());
         }
     }
 }
