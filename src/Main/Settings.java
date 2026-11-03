@@ -48,7 +48,7 @@ public class Settings extends JFrame {
 
                 if (row >= 0 && col >= 0) {
                     Object cellValue = machines.getValueAt(row, col);
-                    nameMachine = (String) machines.getValueAt(row, 1);
+                    nameMachine = (String) machines.getValueAt(row, 0);
 
                     if (cellValue.equals("Editar")) {
                         actualizarMachine = !actualizarMachine;
@@ -63,10 +63,17 @@ public class Settings extends JFrame {
                     }
 
                     if (cellValue.equals("Eliminar")) {
-                        try {
-                            conexion.eliminarMaquina(nameMachine);
-                        } catch (SQLException ex) {
-                            throw new RuntimeException(ex);
+                        int confirm = JOptionPane.showConfirmDialog(Settings.this,
+                                "¿Está seguro de eliminar la máquina '" + nameMachine + "'?",
+                                "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+                        if (confirm == JOptionPane.YES_OPTION) {
+                            try {
+                                conexion.eliminarMaquina(nameMachine);
+                                obtenerFresadoras(conexion);
+                                JOptionPane.showMessageDialog(Settings.this, "Máquina eliminada exitosamente");
+                            } catch (SQLException ex) {
+                                JOptionPane.showMessageDialog(Settings.this, "Error al eliminar máquina: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                            }
                         }
                     }
                 }
@@ -81,7 +88,7 @@ public class Settings extends JFrame {
 
                 if (row >= 0 && col >= 0) {
                     Object cellValue = users.getValueAt(row, col);
-                    nameUser = (String) users.getValueAt(row, 1);
+                    nameUser = (String) users.getValueAt(row, 0);
                     String passwordUser = (String) users.getValueAt(row, 1);
 
                     if (cellValue.equals("Editar")) {
@@ -89,7 +96,7 @@ public class Settings extends JFrame {
 
                         if (actualizarUsuario) {
                             nameField.setText(nameUser);
-                            passwordField.setText(passwordUser);
+                            passwordField.setText(""); // Dejar en blanco; si se deja vacía al actualizar, no se modifica
                             buttonUser.setText("Actualizar usuario");
                         } else {
                             nameField.setText("");
@@ -99,10 +106,17 @@ public class Settings extends JFrame {
                     }
 
                     if (cellValue.equals("Eliminar")) {
-                        try {
-                            conexion.eliminarUsuario(nameUser);
-                        } catch (SQLException ex) {
-                            throw new RuntimeException(ex);
+                        int confirm = JOptionPane.showConfirmDialog(Settings.this,
+                                "¿Está seguro de eliminar el usuario '" + nameUser + "'?",
+                                "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+                        if (confirm == JOptionPane.YES_OPTION) {
+                            try {
+                                conexion.eliminarUsuario(nameUser);
+                                obtenerUsuarios(conexion);
+                                JOptionPane.showMessageDialog(Settings.this, "Usuario eliminado exitosamente");
+                            } catch (SQLException ex) {
+                                JOptionPane.showMessageDialog(Settings.this, "Error al eliminar usuario: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                            }
                         }
                     }
                 }
@@ -111,17 +125,39 @@ public class Settings extends JFrame {
 
         // Actualizar Usuarios en la base de datos
         buttonUser.addActionListener(e -> {
+            String newUsername = nameField.getText().trim();
+            String newPass = new String(passwordField.getPassword());
+
+            if (newUsername.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "El nombre de usuario no puede estar vacío", "Error de validación", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
             if (actualizarUsuario) {
                 try {
-                    conexion.actualizarUsuario(nameUser, Arrays.toString(passwordField.getPassword()), nameField.getText());
+                    conexion.actualizarUsuario(nameUser, newPass, newUsername);
+                    actualizarUsuario = false;
+                    nameField.setText("");
+                    passwordField.setText("");
+                    buttonUser.setText("Crear nuevo usuario");
+                    obtenerUsuarios(conexion);
+                    JOptionPane.showMessageDialog(this, "Usuario actualizado exitosamente");
                 } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
+                    JOptionPane.showMessageDialog(this, "Error al actualizar usuario: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
             } else {
+                if (newPass.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Debe especificar una contraseña para el nuevo usuario", "Error de validación", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
                 try {
-                    conexion.registrarUsuario(nameField.getText(), Arrays.toString(passwordField.getPassword()));
+                    conexion.registrarUsuario(newUsername, newPass);
+                    nameField.setText("");
+                    passwordField.setText("");
+                    obtenerUsuarios(conexion);
+                    JOptionPane.showMessageDialog(this, "Usuario registrado exitosamente");
                 } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
+                    JOptionPane.showMessageDialog(this, "Error al registrar usuario: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -129,7 +165,7 @@ public class Settings extends JFrame {
         // Boton para actualizar las credenciales de red en config
         update.addActionListener(e -> {
             String ssidText = ssid.getText();
-            String passwordText = Arrays.toString(password.getPassword());
+            String passwordText = new String(password.getPassword());
             String gatewayText = gateway.getText();
             String broadcastText = broadcast.getText();
             String maskText = mask.getText();
@@ -140,44 +176,83 @@ public class Settings extends JFrame {
             config.setGateway(gatewayText);
             config.setBroadcast(broadcastText);
             config.setMask(maskText);
+            JOptionPane.showMessageDialog(this, "Configuración de red guardada correctamente");
         });
 
         // Boton para actualizar las credenciales de red en ESPs de aspiradoras
         updateESP.addActionListener(e -> {
             String ssidText = ssid.getText();
-            String passwordText = Arrays.toString(password.getPassword());
+            String passwordText = new String(password.getPassword());
 
-            // Actualizar red de las esp de las aspiradoras
-            try {
-                String[] ips = conexion.obtenerIPs();
-                Arrays.stream(ips).forEach(ip ->
-                {
-                    try {
-                        if (!communication.actualizarRed(ip, ssidText, passwordText)) {
-                            JOptionPane.showMessageDialog(null, "Error al actualizar red de aspiradora " + ip, "Error", JOptionPane.ERROR_MESSAGE);
+            updateESP.setEnabled(false);
+            setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
+
+            java.util.concurrent.Executors.newVirtualThreadPerTaskExecutor().submit(() -> {
+                try {
+                    String[] ips = conexion.obtenerIPs();
+                    java.util.List<String> fallidas = java.util.Collections.synchronizedList(new java.util.ArrayList<>());
+
+                    java.util.List<java.util.concurrent.CompletableFuture<Void>> futures = Arrays.stream(ips)
+                            .map(ip -> java.util.concurrent.CompletableFuture.runAsync(() -> {
+                                try {
+                                    if (!communication.actualizarRed(ip, ssidText, passwordText)) {
+                                        fallidas.add(ip);
+                                    }
+                                } catch (IOException ex) {
+                                    fallidas.add(ip + " (" + ex.getMessage() + ")");
+                                }
+                            }))
+                            .toList();
+
+                    java.util.concurrent.CompletableFuture.allOf(futures.toArray(new java.util.concurrent.CompletableFuture[0])).join();
+
+                    SwingUtilities.invokeLater(() -> {
+                        if (fallidas.isEmpty()) {
+                            JOptionPane.showMessageDialog(Settings.this, "Red actualizada exitosamente en todas las aspiradoras (" + ips.length + ")");
+                        } else {
+                            JOptionPane.showMessageDialog(Settings.this, "No se pudo actualizar la red en:\n" + String.join("\n", fallidas), "Aviso", JOptionPane.WARNING_MESSAGE);
                         }
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                });
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
+                    });
+                } catch (SQLException ex) {
+                    SwingUtilities.invokeLater(() ->
+                        JOptionPane.showMessageDialog(Settings.this, "Error al obtener aspiradoras: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE)
+                    );
+                } finally {
+                    SwingUtilities.invokeLater(() -> {
+                        updateESP.setEnabled(true);
+                        setCursor(java.awt.Cursor.getDefaultCursor());
+                    });
+                }
+            });
         });
 
         // Actualizar Maquinas en la base de datos
         buttonMachine.addActionListener(e -> {
+            String newMachineName = nameMachineField.getText().trim();
+            if (newMachineName.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "El nombre de la máquina no puede estar vacío", "Error de validación", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
             if (actualizarMachine) {
                 try {
-                    conexion.actualizarMaquina(nameMachine, nameMachineField.getText());
+                    conexion.actualizarMaquina(nameMachine, newMachineName);
+                    actualizarMachine = false;
+                    nameMachineField.setText("");
+                    buttonMachine.setText("Añadir nueva fresadora");
+                    obtenerFresadoras(conexion);
+                    JOptionPane.showMessageDialog(this, "Máquina actualizada exitosamente");
                 } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
+                    JOptionPane.showMessageDialog(this, "Error al actualizar máquina: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
             } else {
                 try {
-                    conexion.registrarMaquina(nameMachineField.getText());
+                    conexion.registrarMaquina(newMachineName);
+                    nameMachineField.setText("");
+                    obtenerFresadoras(conexion);
+                    JOptionPane.showMessageDialog(this, "Máquina registrada exitosamente");
                 } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
+                    JOptionPane.showMessageDialog(this, "Error al registrar máquina: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });

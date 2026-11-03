@@ -20,17 +20,20 @@ public class Manage extends JPanel {
     private JButton principal;
     private JButton update;
 
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(r -> {
+        Thread t = new Thread(r, "Manage-Scheduler");
+        t.setDaemon(true);
+        return t;
+    });
+
     public Manage(CardLayout cardLayout, JPanel cardPanel, Conexion conexion, Communication communication, Config config) throws SQLException {
         llenarTabla(conexion);
 
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-
-        // Actializar cada 3 segundos
-        scheduler.scheduleAtFixedRate(
+        scheduler.scheduleWithFixedDelay(
                 () -> actualizar(conexion),
-                config.getDelay(), // Retraso inicial
-                config.getInterval(), // Intervalo
-                TimeUnit.SECONDS // Unidad de tiempo
+                config.getDelay(),
+                Math.max(config.getInterval(), 1),
+                TimeUnit.SECONDS
         );
 
         table.addMouseListener(new MouseAdapter() {
@@ -41,26 +44,39 @@ public class Manage extends JPanel {
 
                 if (row >= 0 && col >= 0) {
                     Object cellValue = table.getValueAt(row, col);
-                    int idAspiradora = Integer.parseInt((String) table.getValueAt(row, 0)) ;
-                    if (cellValue.equals("Editar")) {
-                        Edit edit = null;
+                    int idAspiradora = Integer.parseInt((String) table.getValueAt(row, 0));
+
+                    if ("Editar".equals(cellValue)) {
                         try {
-                            edit = new Edit(idAspiradora, conexion, communication, config);
+                            Edit edit = new Edit(idAspiradora, conexion, communication, config);
+                            edit.setSize(600, 400);
+                            edit.setContentPane(edit.panel);
+                            edit.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                            edit.setLocationRelativeTo(null);
+                            edit.addWindowListener(new java.awt.event.WindowAdapter() {
+                                @Override
+                                public void windowClosed(java.awt.event.WindowEvent ev) {
+                                    actualizar(conexion);
+                                }
+                            });
+                            edit.setVisible(true);
                         } catch (SQLException ex) {
-                            throw new RuntimeException(ex);
+                            JOptionPane.showMessageDialog(Manage.this, "Error al abrir edición: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                         }
-                        edit.setSize(600, 400);
-                        edit.setContentPane(edit.panel);
-                        edit.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                        edit.setLocationRelativeTo(null);
-                        edit.setVisible(true);
                     }
 
-                    if (cellValue.equals("Eliminar")) {
-                        try {
-                            conexion.eliminarAspiradora(idAspiradora);
-                        } catch (SQLException ex) {
-                            throw new RuntimeException(ex);
+                    if ("Eliminar".equals(cellValue)) {
+                        int confirm = JOptionPane.showConfirmDialog(Manage.this,
+                                "¿Está seguro de eliminar la aspiradora con ID " + idAspiradora + "?",
+                                "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+                        if (confirm == JOptionPane.YES_OPTION) {
+                            try {
+                                conexion.eliminarAspiradora(idAspiradora);
+                                actualizar(conexion);
+                                JOptionPane.showMessageDialog(Manage.this, "Aspiradora eliminada exitosamente");
+                            } catch (SQLException ex) {
+                                JOptionPane.showMessageDialog(Manage.this, "Error al eliminar aspiradora: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                            }
                         }
                     }
                 }
@@ -68,21 +84,33 @@ public class Manage extends JPanel {
         });
 
         update.addActionListener(e -> {
-            actualizar(conexion);
+            update.setEnabled(false);
+            Executors.newVirtualThreadPerTaskExecutor().submit(() -> {
+                try {
+                    actualizar(conexion);
+                } finally {
+                    SwingUtilities.invokeLater(() -> update.setEnabled(true));
+                }
+            });
         });
 
         register.addActionListener(e -> {
-            Register register = null;
             try {
-                register = new Register(conexion, communication, config);
+                Register registerFrame = new Register(conexion, communication, config);
+                registerFrame.setSize(600, 400);
+                registerFrame.setContentPane(registerFrame.panel);
+                registerFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                registerFrame.setLocationRelativeTo(null);
+                registerFrame.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosed(java.awt.event.WindowEvent ev) {
+                        actualizar(conexion);
+                    }
+                });
+                registerFrame.setVisible(true);
             } catch (SQLException ex) {
-                throw new RuntimeException(ex);
+                JOptionPane.showMessageDialog(Manage.this, "Error al abrir registro: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
-            register.setSize(600, 400);
-            register.setContentPane(register.panel);
-            register.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            register.setLocationRelativeTo(null);
-            register.setVisible(true);
         });
 
         principal.addActionListener(e -> {
@@ -92,9 +120,15 @@ public class Manage extends JPanel {
 
     public void llenarTabla(Conexion conexion) throws SQLException {
         conexion.conectar();
-
         String[][] datos = conexion.obtenerAdministrarAspiradoras();
+        if (SwingUtilities.isEventDispatchThread()) {
+            renderTabla(datos);
+        } else {
+            SwingUtilities.invokeLater(() -> renderTabla(datos));
+        }
+    }
 
+    private void renderTabla(String[][] datos) {
         String[] columnas = {"ID", "IP", "Máquina", "Editar", "Eliminar"};
         DefaultTableModel modelo = new DefaultTableModel(datos, columnas) {
             @Override
@@ -114,16 +148,14 @@ public class Manage extends JPanel {
         for (int i = 0; i < table.getColumnCount(); i++) {
             table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
-
     }
 
     public void actualizar(Conexion conexion) {
         System.out.println("Actualizando Manage");
-        // Llenar tabla
         try {
             llenarTabla(conexion);
         } catch (SQLException ex) {
-            throw new RuntimeException(ex);
+            System.err.println("Error al actualizar tabla Manage: " + ex.getMessage());
         }
     }
 }

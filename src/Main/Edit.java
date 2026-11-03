@@ -40,74 +40,79 @@ public class Edit extends JFrame {
         estadoLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 
         verify.addActionListener(e -> {
-            try {
-                if (!communication.verificarConexion(ip.getText())) {
-                    verifyLabel.setText("No se pudo verificar la conexion");
-                } else {
-                    verifyLabel.setText("Conexion verificada");
-                }
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
+            String ipStr = ip.getText().trim();
+            if (ipStr.isEmpty()) {
+                verifyLabel.setText("Ingrese una IP primero");
+                return;
             }
+            verify.setEnabled(false);
+            verifyLabel.setText("Verificando...");
+            java.util.concurrent.Executors.newVirtualThreadPerTaskExecutor().submit(() -> {
+                try {
+                    boolean ok = communication.verificarConexion(ipStr);
+                    SwingUtilities.invokeLater(() ->
+                        verifyLabel.setText(ok ? "Conexión verificada" : "No se pudo verificar la conexión")
+                    );
+                } catch (IOException ex) {
+                    SwingUtilities.invokeLater(() ->
+                        verifyLabel.setText("Error: " + ex.getMessage())
+                    );
+                } finally {
+                    SwingUtilities.invokeLater(() -> verify.setEnabled(true));
+                }
+            });
         });
 
         searchButton.addActionListener(e -> {
-            final boolean[] ventanaCerrada = {false};
-            Search search = null;
-            try {
-                search = new Search(communication, config);
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
+            Search search = new Search(this, communication, config);
             search.setSize(600, 400);
             search.setContentPane(search.panel);
-            search.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            search.setLocationRelativeTo(null);
+            search.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            search.setLocationRelativeTo(this);
             search.setVisible(true);
-            search.addWindowListener(new WindowAdapter() {
-                @Override
-                public void windowClosed(WindowEvent e) {
-                    ventanaCerrada[0] = true;
-                    System.out.println("La ventana se ha cerrado.");
-                }
-            });
 
-            // Desactivar ventana actual
-            this.setEnabled(false);
-
-            if (ventanaCerrada[0]) {
-                // Establecer en textfield la ip seleccionada en la ventana de busqueda
-                ip.setText(search.ipMachine.toString());
-                // Activar ventana al cerrar centana de busqueda
-                this.setEnabled(true);
+            if (search.ipMachine != null && !search.ipMachine.trim().isEmpty()) {
+                ip.setText(search.ipMachine);
             }
         });
 
         update.addActionListener(e -> {
-            int idInt = Integer.parseInt(id.getText());
-            String ipText = ip.getText();
+            int idInt;
+            try {
+                idInt = Integer.parseInt(id.getText().trim());
+            } catch (NumberFormatException nfe) {
+                JOptionPane.showMessageDialog(this, "El ID debe ser un número entero válido", "Error de validación", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            String ipText = ip.getText().trim();
+            if (ipText.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "La dirección IP no puede estar vacía", "Error de validación", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
             String nameMaquina = String.valueOf(maquina.getSelectedItem());
             String nameEstado = String.valueOf(estado.getSelectedItem());
 
-            int idMaquina = 1;
-            int idEstado = 1;
+            int idMaquina;
+            int idEstado;
 
             try {
                 idMaquina = conexion.obtenerIdMaquina(nameMaquina);
                 idEstado = conexion.obtenerIdEstado(nameEstado);
             } catch (SQLException ex) {
-                throw new RuntimeException(ex);
+                JOptionPane.showMessageDialog(this, "Error al obtener datos relacionados: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                return;
             }
 
             try {
                 conexion.conectar();
                 conexion.actualizarAspiradora(idInt, ipText, idMaquina, idEstado);
+                this.dispose();
+                JOptionPane.showMessageDialog(null, "Aspiradora actualizada exitosamente");
             } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(null, "Error al realizar la operación en la base de datos: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Error al actualizar la aspiradora en la base de datos: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
-
-            this.dispose();
-            JOptionPane.showMessageDialog(null, "Aspiradora actualizada exitosamente");
         });
     }
 

@@ -58,15 +58,7 @@ public class Communication {
     public Integer actualizarEstado(String ip, Conexion conexion) throws IOException, SQLException {
         // Update (U)
         String response = enviarMensaje(ip, "U");
-        int estado;
-
-        switch (response) {
-            case "U": estado = 1; break; // (En uso)
-            case "F": estado = 2; break; // (Limpio)
-            case "X": estado = 3; break; // (Error)
-            case "TIMEOUT": estado = 4; break; // (Error de conexion)
-            default: estado = 5; break; // (Desconocido)
-        }
+        int estado = EstadoAspiradora.fromCodigoRespuesta(response);
 
         conexion.actualizarAspiradora(ip, estado);
 
