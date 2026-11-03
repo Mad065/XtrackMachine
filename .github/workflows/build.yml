@@ -21,5 +21,13 @@ jobs:
         distribution: 'temurin'
         cache: maven
 
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
+    - name: Build and Test with Maven
+      run: mvn -B clean verify --file pom.xml
+
+    - name: Upload Executable JAR
+      if: success()
+      uses: actions/upload-artifact@v4
+      with:
+        name: xtrackmachine-package
+        path: target/xtrackmachine-*-jar-with-dependencies.jar
+        if-no-files-found: warn
