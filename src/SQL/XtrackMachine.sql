@@ -51,7 +51,7 @@ INSERT INTO Maquina (id, nombre) VALUES
 DROP TABLE IF EXISTS Usuario;
 CREATE TABLE Usuario (
                          nombre VARCHAR(100) NOT NULL,
-                         contrasena VARCHAR(100) NOT NULL,
+                         contrasena VARCHAR(255) NOT NULL,
                          tipo INT NOT NULL,
                          PRIMARY KEY (nombre),
                          KEY tipo (tipo),

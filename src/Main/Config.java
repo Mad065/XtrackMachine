@@ -7,7 +7,6 @@ import java.util.Properties;
 
 public class Config {
 
-    private static final String CONFIG_FILE = "src/Main/config.properties";
     public int interval;
     public int delay;
     public String ssid;
@@ -21,9 +20,22 @@ public class Config {
 
     private Properties props = new Properties();
 
+    private static File resolveConfigFile() {
+        File devFile = new File("src/Main/config.properties");
+        if (devFile.exists()) {
+            return devFile;
+        }
+        File cwdFile = new File("config.properties");
+        if (cwdFile.exists()) {
+            return cwdFile;
+        }
+        File userDir = new File(System.getProperty("user.home"), ".xtrackmachine");
+        return new File(userDir, "config.properties");
+    }
+
     public Config() {
         // Leer el archivo de configuración
-        File file = new File(CONFIG_FILE);
+        File file = resolveConfigFile();
         if (file.exists()) {
             try (InputStream input = new FileInputStream(file)) {
                 props.load(input);
@@ -60,19 +72,19 @@ public class Config {
         dbUser = (envDbUser != null && !envDbUser.isEmpty()) ? envDbUser :
                 props.getProperty("db.user", "root");
         dbPassword = (envDbPassword != null) ? envDbPassword :
-                props.getProperty("db.password", "edsla266");
+                props.getProperty("db.password", "");
 
         NetworkInfo networkInfo = new NetworkInfo();
 
-        if (gateway == null || gateway.trim().isEmpty()) {
+        if (gateway == null || gateway.trim().isEmpty() || "No disponible".equalsIgnoreCase(gateway.trim()) || "No encontrado".equalsIgnoreCase(gateway.trim())) {
             setGateway(networkInfo.updateGateway());
         }
 
-        if (broadcast == null || broadcast.trim().isEmpty()) {
+        if (broadcast == null || broadcast.trim().isEmpty() || "No disponible".equalsIgnoreCase(broadcast.trim()) || "No encontrado".equalsIgnoreCase(broadcast.trim())) {
             setBroadcast(networkInfo.updateBroadcast());
         }
 
-        if (mask == null || mask.trim().isEmpty()) {
+        if (mask == null || mask.trim().isEmpty() || "No disponible".equalsIgnoreCase(mask.trim()) || "No encontrado".equalsIgnoreCase(mask.trim())) {
             setMask(networkInfo.updateSubnetMask());
         }
     }
@@ -90,7 +102,7 @@ public class Config {
 
     // Guardar cambios en el archivo
     private void saveConfig() {
-        File file = new File(CONFIG_FILE);
+        File file = resolveConfigFile();
         File parent = file.getParentFile();
         if (parent != null && !parent.exists()) {
             parent.mkdirs();

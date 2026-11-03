@@ -9,7 +9,7 @@ import java.sql.SQLException;
 
 public class XtrackMachine extends JFrame {
     private JTextField username;
-    private JTextField password;
+    private JPasswordField password;
     private JButton start;
     protected JPanel panel;
 
@@ -18,13 +18,12 @@ public class XtrackMachine extends JFrame {
         Communication communication = new Communication();
         Config config = new Config();
 
-
         conexion.conectar();
 
         start.addActionListener(e -> {
             try {
-                String usernameText = username.getText();
-                String passwordText = password.getText();
+                String usernameText = username.getText().trim();
+                String passwordText = new String(password.getPassword());
                 if (conexion.verificarUsuario(usernameText, passwordText)) {
                     try {
                         UIManager.setLookAndFeel(new FlatDarkLaf());
@@ -39,10 +38,11 @@ public class XtrackMachine extends JFrame {
 
                     this.dispose();
                 } else {
-                    JOptionPane.showMessageDialog(null, "Inicio fallido");
+                    JOptionPane.showMessageDialog(this, "Credenciales incorrectas", "Acceso denegado", JOptionPane.WARNING_MESSAGE);
+                    password.setText("");
                 }
             } catch (SQLException ex) {
-                throw new RuntimeException(ex);
+                JOptionPane.showMessageDialog(this, "Error de base de datos al autenticar: " + ex.getMessage(), "Error de Conexión", JOptionPane.ERROR_MESSAGE);
             }
         });
     }
