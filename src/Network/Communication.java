@@ -61,13 +61,11 @@ public class Communication {
         int estado;
 
         switch (response) {
-            case "D": estado = 1; break; // (Sucio)
+            case "U": estado = 1; break; // (En uso)
             case "F": estado = 2; break; // (Limpio)
-            case "C": estado = 3; break; // (Limpiando)
-            case "U": estado = 4; break; // (En uso)
-            case "X": estado = 5; break; // (Error)
-            case "TIMEOUT": estado = 6; break; // (Error de conexion)
-            default: estado = 7; break; // (Desconocido)
+            case "X": estado = 3; break; // (Error)
+            case "TIMEOUT": estado = 4; break; // (Error de conexion)
+            default: estado = 5; break; // (Desconocido)
         }
 
         conexion.actualizarAspiradora(ip, estado);

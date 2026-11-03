@@ -16,9 +16,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class Principal extends JPanel {
-    private JButton stop;
     private JButton start;
-    private JButton reboot;
     public JPanel panel;
     private JTable table;
     private JButton manage;
@@ -47,28 +45,6 @@ public class Principal extends JPanel {
                 if (row >= 0 && col >= 0) {
                     Object cellValue = table.getValueAt(row, col);
                     String ipAspiradora = (String) table.getValueAt(row, 1);
-
-                    if (cellValue.equals("Detener")) {
-                        // Detener aspiradora
-                        try {
-                            if (!communication.detenerAspiradora(ipAspiradora)) {
-                                JOptionPane.showMessageDialog(null, "Error al detener aspiradora " + ipAspiradora, "Error", JOptionPane.ERROR_MESSAGE);
-                            }
-                        } catch (IOException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                    }
-
-                    if (cellValue.equals("Reiniciar")) {
-                        // Reiniciar aspiradora
-                        try {
-                            if (!communication.reiniciarAspiradora(ipAspiradora)) {
-                                JOptionPane.showMessageDialog(null, "Error al reiniciar aspiradora " + ipAspiradora, "Error", JOptionPane.ERROR_MESSAGE);
-                            }
-                        } catch (IOException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                    }
 
                     if (cellValue.equals("Iniciar")) {
                         // Iniciar aspiradora
@@ -109,43 +85,6 @@ public class Principal extends JPanel {
             }
         });
 
-        stop.addActionListener(e -> {
-            // Detener todas las aspiradoras
-            try {
-                String[] ips = conexion.obtenerIPs();
-                Arrays.stream(ips).forEach(ip ->
-                {
-                    try {
-                        if (!communication.iniciarAspiradora(ip)) {
-                            JOptionPane.showMessageDialog(null, "Error al iniciar aspiradora " + ip, "Error", JOptionPane.ERROR_MESSAGE);
-                        }
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                });
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
-        });
-
-        reboot.addActionListener(e -> {
-            // Reiniciar todas las aspiradoras
-            try {
-                String[] ips = conexion.obtenerIPs();
-                Arrays.stream(ips).forEach(ip ->
-                {
-                    try {
-                        if (!communication.iniciarAspiradora(ip)) {
-                            JOptionPane.showMessageDialog(null, "Error al iniciar aspiradora " + ip, "Error", JOptionPane.ERROR_MESSAGE);
-                        }
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                });
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
-        });
 
         manage.addActionListener(e -> {
             cardLayout.show(cardPanel, "Manage");
@@ -171,7 +110,7 @@ public class Principal extends JPanel {
 
         String[][] datos = conexion.obtenerAspiradoras();
 
-        String[] columnas = {"ID", "IP", "Máquina", "Estado", "Encendido/Apagado", "Detener", "Reiniciar", "Iniciar"};
+        String[] columnas = {"ID", "IP", "Máquina", "Estado", "Iniciar"};
         DefaultTableModel modelo = new DefaultTableModel(datos, columnas) {
             @Override
             public boolean isCellEditable(int row, int column) {

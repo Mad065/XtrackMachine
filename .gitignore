@@ -1,29 +1,88 @@
-### IntelliJ IDEA ###
-out/
-!**/src/main/**/out/
-!**/src/test/**/out/
+# =========================================================================
+# Compilación y Artefactos de Java
+# =========================================================================
+*.class
+*.log
+*.ctxt
+.mtj.tmp/
 
-### Eclipse ###
-.apt_generated
+# Paquetes y artefactos generados (se preservan los JARs manuales de /lib)
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+target/
+out/
+bin/
+build/
+dist/
+
+# =========================================================================
+# Maven y Gradle
+# =========================================================================
+.gradle/
+build/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# =========================================================================
+# IntelliJ IDEA
+# =========================================================================
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/shelf/
+.idea/dataSources/
+.idea/dataSource/
+.idea/dataSources.local.xml
+.idea/httpRequests/
+*.iws
+
+# =========================================================================
+# Eclipse, NetBeans, VS Code
+# =========================================================================
+.apt_generated/
 .classpath
 .factorypath
 .project
-.settings
+.settings/
 .springBeans
 .sts4-cache
-bin/
-!**/src/main/**/bin/
-!**/src/test/**/bin/
-
-### NetBeans ###
+.vscode/
 /nbproject/private/
 /nbbuild/
-/dist/
 /nbdist/
 /.nb-gradle/
 
-### VS Code ###
-.vscode/
-
-### Mac OS ###
+# =========================================================================
+# Sistema Operativo y Duplicados
+# =========================================================================
+# macOS
 .DS_Store
+.AppleDouble
+.LSOverride
+._*
+Icon
+* 2.*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# =========================================================================
+# Configuraciones Locales y Entorno
+# =========================================================================
+*.local.properties
+.env
+skills/
+.antigravity/
