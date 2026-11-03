@@ -19,16 +19,22 @@ public class NetworkInfo {
         try {
             String os = System.getProperty("os.name").toLowerCase();
             if (os.contains("win")) {
-
+                gateway = getGatewayWindows();
+                broadcast = getBroadcastWindows();
+                subnetMask = convertToDecimal(getSubnetMaskWindows());
             } else if (os.contains("mac")) {
-
+                gateway = getGatewayMac();
+                broadcast = getBroadcastMac();
+                subnetMask = convertHexToDecimal(getSubnetMaskMac());
             } else if (os.contains("nix") || os.contains("nux") || os.contains("linux")) {
-
+                gateway = getGatewayLinux();
+                broadcast = getBroadcastLinux();
+                subnetMask = convertCidrToDecimal(getSubnetMaskLinux());
             } else {
                 gateway = broadcast = subnetMask = "No disponible";
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            gateway = broadcast = subnetMask = "No disponible";
         }
     }
 
@@ -112,12 +118,24 @@ public class NetworkInfo {
         }
     }
 
-    // Función para ejecutar comandos en terminal
-    private String executeCommand(String command) throws Exception {
-        Process process = Runtime.getRuntime().exec(new String[]{"/bin/sh", "-c", command});
-        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        String line = reader.readLine();
-        return (line != null) ? line.trim() : "No encontrado";
+    // Función para ejecutar comandos en terminal de forma multiplataforma y segura
+    private String executeCommand(String command) {
+        try {
+            String os = System.getProperty("os.name").toLowerCase();
+            String[] cmd;
+            if (os.contains("win")) {
+                cmd = new String[]{"cmd.exe", "/c", command};
+            } else {
+                cmd = new String[]{"/bin/sh", "-c", command};
+            }
+            Process process = Runtime.getRuntime().exec(cmd);
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                String line = reader.readLine();
+                return (line != null) ? line.trim() : "No encontrado";
+            }
+        } catch (Exception e) {
+            return "No encontrado";
+        }
     }
 
     // Getters

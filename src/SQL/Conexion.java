@@ -1,16 +1,33 @@
 package SQL;
 
+import Main.Config;
 import java.sql.*;
 
 public class Conexion {
 
     Connection connection;
-    String url = "jdbc:mysql://127.0.0.1:3306/xtrackmachine";
-    String user = "root";
-    String password = "edsla266";
+    String url;
+    String user;
+    String password;
 
     public Conexion () {
+        Config config = new Config();
+        this.url = config.getDbUrl();
+        this.user = config.getDbUser();
+        this.password = config.getDbPassword();
+    }
 
+    public Conexion (Config config) {
+        if (config != null) {
+            this.url = config.getDbUrl();
+            this.user = config.getDbUser();
+            this.password = config.getDbPassword();
+        } else {
+            Config defaultCfg = new Config();
+            this.url = defaultCfg.getDbUrl();
+            this.user = defaultCfg.getDbUser();
+            this.password = defaultCfg.getDbPassword();
+        }
     }
 
     public void conectar() {
@@ -65,7 +82,7 @@ public class Conexion {
 
         rs.beforeFirst();
 
-        String[][] datos = new String[rowCount][8];
+        String[][] datos = new String[rowCount][5];
         int i = 0;
 
         while (rs.next()) {
